@@ -6,3 +6,6 @@ spring:
 
   banner:
     location: banner.txt
+    
+server:
+  port: 8181
