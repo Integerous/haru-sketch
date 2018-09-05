@@ -5,8 +5,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.harusketch.domain.PostsRepository;
+import com.harusketch.domain.posts.PostsRepository;
 import com.harusketch.dto.posts.PostsSaveRequestDto;
+import com.harusketch.service.PostsService;
 
 import lombok.AllArgsConstructor;
 
@@ -17,7 +18,8 @@ import lombok.AllArgsConstructor;
 //모든 필드를 인자값으로 하는 생성자를 생성
 public class WebRestController {
 	
-	private PostsRepository postsRepository;
+	//private PostsRepository postsRepository;
+	private PostsService postsService; //save 메소드를 service의 save로 교체
 	
 	@GetMapping("/hello")
 	public String hello() {
@@ -25,8 +27,9 @@ public class WebRestController {
 	}
 	
 	@PostMapping("/posts")
-	public void savePosts(@RequestBody PostsSaveRequestDto dto) {
-		postsRepository.save(dto.toEntity());
+	public Long savePosts(@RequestBody PostsSaveRequestDto dto) {
+		//postsRepository.save(dto.toEntity());
+		return postsService.save(dto);//save 메소드를 service의 save로 교체
 	}
 	
 }

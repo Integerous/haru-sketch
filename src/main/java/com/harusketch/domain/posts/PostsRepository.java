@@ -1,6 +1,9 @@
-package com.harusketch.domain;
+package com.harusketch.domain.posts;
+
+import java.util.stream.Stream;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 // MyBatis에서 Dao라고 불리는 DB Layer 접근자이다.
 // JPA에선 Repository라고 부르며 interface로 생성한다.
@@ -8,4 +11,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 // 특별히 @Repository를 추가할 필요도 없다.
 public interface PostsRepository extends JpaRepository<Posts, Long>{
 
+	@Query("SELECT p " +
+			"FROM Posts p " +
+			"ORDER BY p.id DESC")
+	Stream<Posts> findAllDesc();
 }
