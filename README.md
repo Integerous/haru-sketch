@@ -370,3 +370,65 @@
         recipients:
           - ryanhan@cloudcash.kr
     ~~~
+- CodeDeploy로 스크립트 실행
+  - application.jar 파일을 실행시키는 것까지가 배포이므로
+  - EC2에 AWS CodeDeploy로 받은 파일을 실행시키는 배포 스크립트 생성
+    - jar 파일들을 모아둘 디렉토리 생성 `$ mkdir /home/ec2-user/app/travis/jar`
+    - jar 디렉토리에 옮겨진 application.jar를 실행시킬 `deploy.sh` 파일 생성
+      - `nano /home/ec2-user/app/travis/deploy.sh`
+      ~~~sh
+      #!/bin/bash
+
+      REPOSITORY=/home/ec2-user/app/travis
+
+      echo "> 현재 구동중인 어플리케이션 PID 확인"
+      CURRENT_PID=$(pgrep -f harusketch)
+      echo "$CURRENT_PID"
+
+      if [ -z $CURRENT_PID ]; then
+          echo "> 현재 구동중인 어플리케이션이 없으므로 종료하지 않습니다."
+      else
+          echo "> kill -15 $CURRENT_PID"
+          kill -15 $CURRENT_PID
+          sleep 3
+      fi
+
+      echo "> 새로운 어플리케이션 배포!"
+      echo "> Build 파일 복사"
+      cp $REPOSITORY/build/build/libs/*.jar $REPOSITORY/jar/
+
+      JAR_NAME=$(ls $REPOSITORY/jar/ |grep 'harusketch' | tail -n 1)
+
+      echo "> 새로 배포된 JAR 이름은?? ===> $JAR_NAME"
+
+      nohup java -jar $REPOSITORY/jar/$JAR_NAME &
+      ~~~
+- AWS CodeDeploy가 배포를 마치면 `deploy.sh`를 실행하도록 `appspec.yml` 설정 변경
+  - `appspec.yml` 전체 코드
+    ~~~yml
+    version: 0.0  ## CodeDeploy 버전. 프로젝트 버전이 아니기 때문에 0.0 외에 다른 버전을 사용하면 오류 발생
+    os: linux
+    files:
+      - source:  /  ## S3 버킷에서 복사할 파일의 위치를 나타냄
+        destination: /home/ec2-user/app/travis/build/  ## zip파일을 복사해 압축을 풀 위치를 지정
+
+
+    hooks:
+      AfterInstall:  ## 배포가 끝나면 아래 명령어를 실행
+        - location: execute-deploy.sh  ## CodeDeploy에서 바로 deploy.sh 를 실생시킬 수 없으므로, deploy.sh 를 실행하는 execute-deploy.sh 파일을 실행하여 우회한다.
+          timeout: 180
+    ~~~
+  - CodeDeploy에서 바로 deploy.sh 를 실생시킬 수 없으므로, deploy.sh 를 실행하는 execute-deploy.sh 파일을 실행하여 우회한다.
+- CodeDeploy가 실행할 수 있도록 `execute-deploy.sh` 파일을 프로젝트 내부에 생성
+  - `execute-deploy.sh`
+    ~~~sh
+    #!/bin/bash
+    /home/ec2-user/app/travis/deploy.sh > /dev/null 2> /dev/null < /dev/null & 
+    ~~~
+
+### 현재까지의 상황
+- 테스트, 빌드, 배포 모두 자동화
+- 작업이 끝난 내용을 `develop` 브랜치에 push하면 자동으로 EC2에 배포
+- 문제점
+  - 배포하는 동안 스프링부트 프로젝트는 종료상태가 되어 서비스를 이용할 수 없다는 점.
+  - Nginx를 사용해서 무중단 배포해야 함
