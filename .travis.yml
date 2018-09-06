@@ -1,0 +1,22 @@
+language: java
+jdk:
+  - openjdk8
+  
+branches:
+  only:
+    - develop ## 오직 develop 브랜치에 push 될 때만 수행
+    
+    
+# Travis CI 서버의 Home
+cache: ## Gradle을 통해 의존성을 받게 되면 이를 해당 디렉토리에 캐시하여, 같은 의존성은 다음 배포때부터 다시 받지 않도록 설정
+  directories:
+    - '$HOME/.m2/repository'
+    - '$HOME/.gradle'
+
+script: "./gradlew clean build" ## develop 브랜치에 Push 되었을때 수행하는 명령어. 프로젝트 내부에 둔 gradlew를 통해 clean & build 수행
+  
+# CI 실행 완료시 메일로 알람
+notifications:
+  email:
+    recipients:
+      - ryanhan@cloudcash.kr
