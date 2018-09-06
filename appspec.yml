@@ -3,3 +3,9 @@ os: linux
 files:
   - source:  /  ## S3 버킷에서 복사할 파일의 위치를 나타냄
     destination: /home/ec2-user/app/travis/build/  ## zip파일을 복사해 압축을 풀 위치를 지정
+    
+
+hooks:
+  AfterInstall:  ## 배포가 끝나면 아래 명령어를 실행
+    - location: execute-deploy.sh  ## CodeDeploy에서 바로 deploy.sh 를 실생시킬 수 없으므로, deploy.sh 를 실행하는 execute-deploy.sh 파일을 실행하여 우회한다.
+      timeout: 180
