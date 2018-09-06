@@ -20,7 +20,7 @@ script: "./gradlew clean build" ## develop 브랜치에 Push 되었을때 수행
 before_deploy:  ## 매번 Travis CI에서 파일을 하나하나 복사하면 시간이 많이 걸리므로 프로젝트 폴더 채로 압축해서 S3에 전달하도록 설정
   - zip -r harusketch * ## 현재 위치의 모든 파일을 `harusketch` 이름으로 압축
   - mkdir -p deploy ## deploy 라는 디렉토리를 Travis CI가 실행중인 위치에서 생성
-  - mv harusketch.zip deploy/harusketch-zip
+  - mv harusketch.zip deploy/harusketch.zip
 
 deploy:
   - provider: s3
