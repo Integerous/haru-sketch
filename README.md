@@ -39,20 +39,26 @@
 - 보안그룹 설정(내 작업공간 IP, HTTP, HTTPS)
 - EC2 터미널 접속
   - SSH 접속 쉽게하기
-    - 키파일(.pem)을 `~./ssh/`로 복사
-    - 키파일 위치에서 `cp harusketch.pem ~/.ssh/`
+    - 키파일(.pem)을 `~./ssh/`로 복사 `cp harusketch.pem ~/.ssh/`
     - `~/.ssh/`에서 키 권한 변경 `chmod 600 ./harusketch.pem`
     - `~/.ssh/` 디렉토리에 `config`파일 생성 `nano config``
     - config 파일에 아래와 같이 설정
       ~~~config
       ### Haru Sketch
-      Host 원하는 이름
+      Host haru(원하는 이름)
             HostName Elastic IP
             User ec2-user (ubuntu 사용시 ubuntu. 그 외에는 ec2-user)
             IdentityFile ~/.ssh/harusketch.pem
-      ~~~      
+      ~~~
+    - `ssh haru` 로 EC2 접속
 ### AWS RDS PostgreSQL 생성
-- 보안그룹 수정
-  - EC2 인스턴스의 보안그룹
-  
+- RDS 보안그룹 생성 (PostgreSQL 유형으로 생성)
+  - EC2 인스턴스의 보안그룹 ID를 IP에 입력
+  - 작업환경 IP 입력
+  - RDS 보안그룹을 방금 생성한 보안그룹으로 변경
 - 로컬PC에서 RDS 접근
+  - DBeaver 실행하여 연결 추가
+  - Host 주소에 RDS 인스턴스의 endpoint 입력
+  - Database에 인스턴스 생성할때 지정한 DB이름 입력
+  - 생성- ㅖ
+  - defau
