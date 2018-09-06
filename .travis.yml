@@ -33,7 +33,7 @@ deploy:
     local_dir: deploy  ## before_deploy에서 생성한 디렉토리
     wait-until-deployed: true
     on:
-      repo: integerous/Restful-WebApp
+      repo: Integerous/Restful-WebApp
       branch: develop
       
 # CI 실행 완료시 메일로 알람
