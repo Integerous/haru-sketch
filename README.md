@@ -186,13 +186,33 @@
   - 역할 이름 입력 (harusketch-CodeDeployRole) 및 생성
 
 - 역할들을 각 AWS 서비스에 할당 
-  - EC2에 Code Deploy Role 추가
+  - EC2에 CodeDeploy Role 추가
     - EC2 인스턴스 설정 - IAM 역할 연결/바꾸기
     - `harusketch-EC2CodeDeployRole` 선택
-  - EC2에 Code Deploy Agent 설치 (CodeDeploy에서 실행하는 이벤트를 EC2에서 받아서 처리할 수 있도록)
+  - EC2에 CodeDeploy Agent 설치 (CodeDeploy에서 실행하는 이벤트를 EC2에서 받아서 처리할 수 있도록)
     - EC2 ssh 접속
     - AWS CLI 설치 (AWS를 커맨드로 다루기 위해)
-      - `sudo yum -y update`
-      - `sudo yum install -y aws-cli`
-    - AWS CLI에 accessKey와 secretKey 입력
-    
+      - `$ sudo yum -y update`
+      - `$ sudo yum install -y aws-cli`
+    - AWS CLI 기본 설정
+      - `/home/ec2-user/` 에서 `$ sudo aws configure`
+      - 액세스키와 비밀키 입력 (사용자 생성할 때 다운받은 .csv 파일)
+      - region name 입력 (ap-northeast-2)
+      - output format 입력 (json)
+    - AWS CodeDeploy CLI 설치
+      - `/home/ec2-user/` 에서
+      - `$ aws s3 cp s3://aws-codedeploy-ap-northeast-2/latest/install . --region ap-northeast-2`
+      - 다운로드가 끝나면 생기는 ./install 파일 실행권한 부여 `$ chmod +x ./install`
+    - AWS CodeDeploy Agent 설치 및 실행
+      - 생성한 파일(./install)을 이용해 설치 `$ sudo ./install auto`
+      - 설치가 완료되면 Agent 실행 확인 `$ sudo service codedeploy-agent status`
+  - CodeDeploy 실행 자동화
+    - EC2 인스턴스가 부팅되면 자동으로 AWS CodeDeploy Agent가 실행되도록 
+    - `/etc/init.d` 에 쉘스크립트 파일 생성
+      - `$ sudo nano /etc/init.d/codedeploy-startup.sh`
+        ~~~sh
+        #!/bin/bash
+        
+        echo 'Starting codedeploy-agent'
+        sudo service codedeploy-agent start
+        ~~~
