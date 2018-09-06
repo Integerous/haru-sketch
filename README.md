@@ -24,3 +24,41 @@
 |~9/14 금|10. 배포 및 피드백|NginX 활용|
 
 
+
+## 개발 과정
+### gradle 빌드 속도 높이기
+- `${HOME}/.gradle/gradle.properties` 생성해서 아래 내용 추가
+  ~~~
+  org.gradle.daemon=true
+  ~~~
+
+### EC2 생성
+- Amazon Linux 2018 선택
+- harusketch pem 키 생성
+- Elastic IP 적용 (적용안하면 인스턴스 재시작 될 때마다 IP 바뀜)
+- 보안그룹 설정(내 작업공간 IP, HTTP, HTTPS)
+- EC2 터미널 접속
+  - SSH 접속 쉽게하기
+    - 키파일(.pem)을 `~./ssh/`로 복사 `cp harusketch.pem ~/.ssh/`
+    - `~/.ssh/`에서 키 권한 변경 `chmod 600 ./harusketch.pem`
+    - `~/.ssh/` 디렉토리에 `config`파일 생성 `nano config``
+    - config 파일에 아래와 같이 설정
+      ~~~config
+      ### Haru Sketch
+      Host haru(원하는 이름)
+            HostName Elastic IP
+            User ec2-user (ubuntu 사용시 ubuntu. 그 외에는 ec2-user)
+            IdentityFile ~/.ssh/harusketch.pem
+      ~~~
+    - `ssh haru` 로 EC2 접속
+### AWS RDS PostgreSQL 생성
+- RDS 보안그룹 생성 (PostgreSQL 유형으로 생성)
+  - EC2 인스턴스의 보안그룹 ID를 IP에 입력
+  - 작업환경 IP 입력
+  - RDS 보안그룹을 방금 생성한 보안그룹으로 변경
+- 로컬PC에서 RDS 접근
+  - DBeaver 실행하여 연결 추가
+  - Host 주소에 RDS 인스턴스의 endpoint 입력
+  - Database에 인스턴스 생성할때 지정한 DB이름 입력
+  - 생성- ㅖ
+  - defau
