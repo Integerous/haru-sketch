@@ -1,0 +1,5 @@
+version: 0.0  ## CodeDeploy 버전. 프로젝트 버전이 아니기 때문에 0.0 외에 다른 버전을 사용하면 오류 발생
+os: linux
+files:
+  - source:  /  ## S3 버킷에서 복사할 파일의 위치를 나타냄
+    destination: /home/ec2-user/app/travis/build/  ## zip파일을 복사해 압축을 풀 위치를 지정
