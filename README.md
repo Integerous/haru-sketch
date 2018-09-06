@@ -1,4 +1,4 @@
-# 스프링부트 웹앱 프로젝트
+# 스프링부트 웹앱 프로젝트 [![Build Status](https://travis-ci.org/Integerous/Restful-WebApp.svg?branch=develop)](https://travis-ci.org/Integerous/Restful-WebApp)
 
 ## 개발 환경
 - RESTful API 기반 Web application
@@ -124,3 +124,75 @@
   - EC2 인바운드 규칙 편집
     - 8080 포트 오픈
   - EC2 인스턴스의 퍼블릭 DNS에 :8080 붙여서 접속 확인
+
+### Travis CI 연동 (테스트&빌드 자동화)
+- 시작
+  - [Travis CI](https://travis-ci.org/)에 github 아이디로 로그인
+  - 프로젝트 저장소의 상태 활성화
+- 프로젝트 설정
+  - 프로젝트에 `.travis.yml` 파일 생성
+    ~~~yml
+    language: java
+    jdk:
+      - openjdk8
+
+    branches:
+      only:
+        - develop ## 오직 develop 브랜치에 push 될 때만 수행
+
+    # Travis CI 서버의 Home
+    cache: ## Gradle을 통해 의존성을 받게 되면 이를 해당 디렉토리에 캐시하여, 같은 의존성은 다음 배포때부터 다시 받지 않도록 설정
+      directories:
+        - '$HOME/.m2/repository'
+        - '$HOME/.gradle'
+
+    script: "./gradlew clean build" ## develop 브랜치에 Push 되었을때 수행하는 명령어. 프로젝트 내부에 둔 gradlew를 통해 clean & build 수행
+
+    # CI 실행 완료시 메일로 알람 (slack도 가능)
+    notifications:
+      email:
+        recipients:
+          - ryanhan@cloudcash.kr
+    ~~~
+- Commit & Push 후 Travis CI 저장소 페이지 확인
+- 여기까지가 테스트와 빌드 자동화.
+
+### AWS Code Deploy 연동 (배포 자동화)
+- IAM 계정 생성
+  - Travis CI가 사용 할 수 있도록 AWS Code Deploy용 계정 추가
+  - IAM 콘솔에서 사용자 추가
+    - 사용자 이름 입력 (harusketch-deploy)
+    - 액세스 유형: 프로그래밍 방식 액세스 체크
+  - 정책 선택
+    - 기존 정책 직접 연결
+    - S3로 검색하여 `AmazonS3FullAccess` 선택
+    - deploy로 검색하여 `AWSCodeDeployFullAccess` 선택
+  - 사용자 생성
+    - 액세스키와 비밀키 .csv 다운로드
+- AWS S3 버킷 생성
+  - 빌드 된 jar 파일을 보관할 S3 버킷 생성
+  - 버킷 이름 입력 (harusketch-deploy)
+  - 다른 옵션 없이 생성
+- IAM Role 추가
+  - 나 대신 access key & secret key를 사용해 원하는 기능을 진행하게 할 AWS Role 생성
+  - IAM - 역할 - 역할만들기
+  - 사용사례 선택 EC2
+  - 권한 정책 연결
+    - EC2RoleForAWSCodeDeploy 로 검색하여 선택
+  - 역할 이름 입력 (harusketch-EC2CodeDeployRole) 및 생성
+- IAM Role 추가2
+  - 사용사례 선택 CodeDeploy
+  - 권한 정책 연결 (AWSCodeDeployRole)
+  - 역할 이름 입력 (harusketch-CodeDeployRole) 및 생성
+
+- 역할들을 각 AWS 서비스에 할당 
+  - EC2에 Code Deploy Role 추가
+    - EC2 인스턴스 설정 - IAM 역할 연결/바꾸기
+    - `harusketch-EC2CodeDeployRole` 선택
+  - EC2에 Code Deploy Agent 설치 (CodeDeploy에서 실행하는 이벤트를 EC2에서 받아서 처리할 수 있도록)
+    - EC2 ssh 접속
+    - AWS CLI 설치 (AWS를 커맨드로 다루기 위해)
+      - `sudo yum -y update`
+      - `sudo yum install -y aws-cli`
+    - AWS CLI에 accessKey와 secretKey 입력
+    
