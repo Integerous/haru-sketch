@@ -80,3 +80,6 @@
     - `$ git clone -b develop --single-branch [프로젝트 저장소 ssh주소]`
   - 프로젝트 잘 받아졌는지 테스트
     - `$ ./gradlew test`
+    - `gradlew`파일 : EC2에 Gradle 설치하지 않았거나 Gradle 버전이 달라도 해당 프로젝트에 한해서 Gradle을 쓸 수 있도록 지원하는 Wrapper 파일
+- 배포 준비
+  - deploy.sh
