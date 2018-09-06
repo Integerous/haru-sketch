@@ -82,4 +82,45 @@
     - `$ ./gradlew test`
     - `gradlew`파일 : EC2에 Gradle 설치하지 않았거나 Gradle 버전이 달라도 해당 프로젝트에 한해서 Gradle을 쓸 수 있도록 지원하는 Wrapper 파일
 - 배포 준비
-  - deploy.sh
+  - `$~app/git`에 `deploy.sh` 파일 생성
+    ~~~sh
+    #!/bin/bash
+
+    REPOSITORY=/home/ec2-user/app/git
+    cd $REPOSITORY/Restful-WebApp
+
+    echo "> Git Pull"
+    git pull
+
+    echo "> 프로젝트 Build 시작"
+    ./gradlew build
+
+    echo "> Build 파일 복사"
+    cp ./build/libs/*.jar $REPOSITORY/
+
+    echo "> 현재 구동중인 애플리케이션 pid 확인"
+    CURRENT_PID=$(pgrep -f harusketch)
+
+    echo "$CURRENT_PID"
+    if [ -z $CURRENT_PID ]; then
+        echo "> 현재 구동중인 애플리케이션이 없으므로 종료하지 않습니다."
+    else
+        echo "> kill -2 $CURRENT_PID"
+        kill -9 $CURRENT_PID
+        sleep 5
+    fi
+
+    echo "> 새 어플리케이션 배포"
+    JAR_NAME=$(ls $REPOSITORY/ |grep 'harusketch' | tail -n 1)
+    echo "> 새 배포 버전의 이름은? ===> $JAR_NAME"
+
+    nohup java -jar $REPOSITORY/$JAR_NAME &
+    ~~~
+  - `deploy.sh`에 실행권한 부여 `$ chmod 755 ./deploy.sh`
+- 배포
+  - `$ ./deploy.sh`
+  - `ps -ef|grep harusketch`로 프로세스 실행 확인
+- 서비스 접속 테스트
+  - EC2 인바운드 규칙 편집
+    - 8080 포트 오픈
+  - EC2 인스턴스의 퍼블릭 DNS에 :8080 붙여서 접속 확인
