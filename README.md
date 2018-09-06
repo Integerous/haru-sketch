@@ -221,6 +221,11 @@
 - 프로젝트 내부의 `.travis.yml 파일에 아래 코드 추가
   ~~~yml
   # Travis CI & S3 연동
+  before_deploy:  ## 매번 Travis CI에서 파일을 하나하나 복사하면 시간이 많이 걸리므로 프로젝트 폴더 채로 압축해서 S3에 전달하도록 설정
+    - zip -r harusketch * ## 현재 위치의 모든 파일을 `harusketch` 이름으로 압축
+    - mkdir -p deploy ## deploy 라는 디렉토리를 Travis CI가 실행중인 위치에서 생성
+    - mv harusketch.zip deploy/harusketch-zip
+
   deploy:
     - provider: s3
       access_key_id: $AWS_ACCESS_KEY   ## Travis repo settings에 설정된 값
@@ -229,11 +234,139 @@
       region: ap-northeast-2
       skip_cleanup: true
       acl: public_read
+      local_dir: deploy  ## before_deploy에서 생성한 디렉토리
       wait-until-deployed: true
       on:
         repo: integerous/Restful-WebApp
         branch: develop
-  ~~~
-- Travis CI에서
+    ~~~
+- Travis CI에서 키 값 등록 (Github에 AWS access key와 secret key를 노출하지 않기 위해)
   - Travis CI - settings - Environment Variables
   - `AWS_ACCESS_KEY`와 `AWS_SECRET_KEY`를 변수로 하는 .csv의 키 값들 등록
+- `.travis.yml` 파일 전체 코드
+  ~~~yml
+  language: java
+  jdk:
+    - openjdk8
+
+  branches:
+    only:
+      - develop ## 오직 develop 브랜치에 push 될 때만 수행
+
+
+  # Travis CI 서버의 Home
+  cache: ## Gradle을 통해 의존성을 받게 되면 이를 해당 디렉토리에 캐시하여, 같은 의존성은 다음 배포때부터 다시 받지 않도록 설정
+    directories:
+      - '$HOME/.m2/repository'
+      - '$HOME/.gradle'
+
+  script: "./gradlew clean build" ## develop 브랜치에 Push 되었을때 수행하는 명령어. 프로젝트 내부에 둔 gradlew를 통해 clean & build 수행
+
+
+  # Travis CI & S3 연동
+  before_deploy:  ## 매번 Travis CI에서 파일을 하나하나 복사하면 시간이 많이 걸리므로 프로젝트 폴더 채로 압축해서 S3에 전달하도록 설정
+    - zip -r harusketch * ## 현재 위치의 모든 파일을 `harusketch` 이름으로 압축
+    - mkdir -p deploy ## deploy 라는 디렉토리를 Travis CI가 실행중인 위치에서 생성
+    - mv harusketch.zip deploy/harusketch-zip
+
+  deploy:
+    - provider: s3
+      access_key_id: $AWS_ACCESS_KEY   ## Travis repo settings에 설정된 값
+      secret_access_key: $AWS_SECRET_KEY   ## Travis repo settings에 설정된 값
+      bucket: harusketch-deploy
+      region: ap-northeast-2
+      skip_cleanup: true
+      acl: public_read
+      local_dir: deploy  ## before_deploy에서 생성한 디렉토리
+      wait-until-deployed: true
+      on:
+        repo: integerous/Restful-WebApp
+        branch: develop
+
+  # CI 실행 완료시 메일로 알람
+  notifications:
+    email:
+      recipients:
+        - ryanhan@cloudcash.kr
+  ~~~
+
+### Travis CI & S3 & CodeDeploy 연동
+- AWS CodeDeploy 콘솔에서 어플리케이션 생성
+  - 어플리케이션 이름 입력 (harusketch)
+  - 배포 그룹 이름 입력 (harusketch-group)
+  - 현재 위치 배포
+  - ARN 으로 기존에 생성한 `CodeDeployRole` 선택 (`EC2CodeDeployRole` 아님)
+  - 어플리케이션 생성
+- S3에서 zip을 받아올 디렉토리 생성
+  - `$ mkdir /home/ec2-user/app/travis`
+  - `$ mkdir /home/ec2-user/app/travis/build`
+  - Travis CI의 빌드가 끝나면 S3에 zip파일이 전송되고, 이 zip파일은 `/home/ec2-user/app/travis/build`로 복사되어 압축을 푼다.
+- AWS CodeDeploy는 `appspec.yml` 에서 설정
+  - `.travis.yml`과 같은 위치에 `appspec.yml` 파일을 아래와 같이 생성
+    ~~~yml
+    version: 0.0  ## CodeDeploy 버전. 프로젝트 버전이 아니기 때문에 0.0 외에 다른 버전을 사용하면 오류 발생
+    os: linux
+    files:
+      - source:  /  ## S3 버킷에서 복사할 파일의 위치를 나타냄
+        destination: /home/ec2-user/app/travis/build/  ## zip파일을 복사해 압축을 풀 위치를 지정
+    ~~~
+  - Travis CI가 CodeDeploy도 실행시키도록 `.travis.yml` 파일에 설정 추가한 최종 파일
+    ~~~yml
+    language: java
+    jdk:
+      - openjdk8
+
+    branches:
+      only:
+        - develop ## 오직 develop 브랜치에 push 될 때만 수행
+
+
+    # Travis CI 서버의 Home
+    cache: ## Gradle을 통해 의존성을 받게 되면 이를 해당 디렉토리에 캐시하여, 같은 의존성은 다음 배포때부터 다시 받지 않도록 설정
+      directories:
+        - '$HOME/.m2/repository'
+        - '$HOME/.gradle'
+
+    script: "./gradlew clean build" ## develop 브랜치에 Push 되었을때 수행하는 명령어. 프로젝트 내부에 둔 gradlew를 통해 clean & build 수행
+
+
+    # Travis CI & S3 연동
+    before_deploy:  ## 매번 Travis CI에서 파일을 하나하나 복사하면 시간이 많이 걸리므로 프로젝트 폴더 채로 압축해서 S3에 전달하도록 설정
+      - zip -r harusketch * ## 현재 위치의 모든 파일을 `harusketch` 이름으로 압축
+      - mkdir -p deploy ## deploy 라는 디렉토리를 Travis CI가 실행중인 위치에서 생성
+      - mv harusketch.zip deploy/harusketch-zip
+
+    deploy:
+      - provider: s3
+        access_key_id: $AWS_ACCESS_KEY   ## Travis repo settings에 설정된 값
+        secret_access_key: $AWS_SECRET_KEY   ## Travis repo settings에 설정된 값
+        bucket: harusketch-deploy  ## S3 버킷
+        region: ap-northeast-2
+        skip_cleanup: true
+        acl: public_read
+        local_dir: deploy  ## before_deploy에서 생성한 디렉토리
+        wait-until-deployed: true
+        on:
+          repo: Integerous/Restful-WebApp
+          branch: develop
+
+      - provider: codedeploy
+        access_key_id: $AWS_ACCESS_KEY   ## Travis repo settings에 설정된 값
+        secret_access_key: $AWS_SECRET_KEY   ## Travis repo settings에 설정된 값
+        bucket: harusketch-deploy  ## S3 버킷
+        key: harusketch.zip  ## S3 버킷에 저장된 harusketch.zip 파일을 EC2로 배포
+        bundle_type: zip
+        application: harusketch  ## AWS 콘솔로 등록한 CodeDeploy 어플리케이션
+        deployment_group: harusketch-group  ## AWS 콘솔로 등록한 CodeDeploy 배포 그룹
+        region: ap-northeast-2
+        wait-until-deployed: true
+        on:
+          repo: Integerous/Restful-WebApp
+          branch: develop
+
+    # CI 실행 완료시 메일로 알람
+    notifications:
+      email:
+        recipients:
+          - ryanhan@cloudcash.kr
+    ~~~
