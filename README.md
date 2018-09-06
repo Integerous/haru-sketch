@@ -216,3 +216,24 @@
         echo 'Starting codedeploy-agent'
         sudo service codedeploy-agent start
         ~~~
+### Travis CI와 AWS S3 연동
+- CodeDeploy는 저장 기능이 없다. 따라서 Travis CI가 빌드한 결과물을 받아서 CodeDeploy가 가져갈 수 있또록 보관할 수 있는 공간이 필요한데, 보통 S3 쓴다.
+- 프로젝트 내부의 `.travis.yml 파일에 아래 코드 추가
+  ~~~yml
+  # Travis CI & S3 연동
+  deploy:
+    - provider: s3
+      access_key_id: $AWS_ACCESS_KEY   ## Travis repo settings에 설정된 값
+      secret_access_key: $AWS_SECRET_KEY   ## Travis repo settings에 설정된 값
+      bucket: harusketch-deploy
+      region: ap-northeast-2
+      skip_cleanup: true
+      acl: public_read
+      wait-until-deployed: true
+      on:
+        repo: integerous/Restful-WebApp
+        branch: develop
+  ~~~
+- Travis CI에서
+  - Travis CI - settings - Environment Variables
+  - `AWS_ACCESS_KEY`와 `AWS_SECRET_KEY`를 변수로 하는 .csv의 키 값들 등록
