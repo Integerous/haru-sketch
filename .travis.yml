@@ -14,15 +14,14 @@ cache: ## Gradle을 통해 의존성을 받게 되면 이를 해당 디렉토리
     - '$HOME/.gradle'
 
 script: "./gradlew clean build" ## develop 브랜치에 Push 되었을때 수행하는 명령어. 프로젝트 내부에 둔 gradlew를 통해 clean & build 수행
-  
-# CI 실행 완료시 메일로 알람
-notifications:
-  email:
-    recipients:
-      - ryanhan@cloudcash.kr
-      
+        
       
 # Travis CI & S3 연동
+before_deploy:  ## 매번 Travis CI에서 파일을 하나하나 복사하면 시간이 많이 걸리므로 프로젝트 폴더 채로 압축해서 S3에 전달하도록 설정
+  - zip -r harusketch * ## 현재 위치의 모든 파일을 `harusketch` 이름으로 압축
+  - mkdir -p deploy ## deploy 라는 디렉토리를 Travis CI가 실행중인 위치에서 생성
+  - mv harusketch.zip deploy/harusketch-zip
+
 deploy:
   - provider: s3
     access_key_id: $AWS_ACCESS_KEY   ## Travis repo settings에 설정된 값
@@ -31,7 +30,14 @@ deploy:
     region: ap-northeast-2
     skip_cleanup: true
     acl: public_read
+    local_dir: deploy  ## before_deploy에서 생성한 디렉토리
     wait-until-deployed: true
     on:
       repo: integerous/Restful-WebApp
       branch: develop
+      
+# CI 실행 완료시 메일로 알람
+notifications:
+  email:
+    recipients:
+      - ryanhan@cloudcash.kr
