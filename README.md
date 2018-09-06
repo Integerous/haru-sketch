@@ -27,10 +27,7 @@
 
 ## 개발 과정
 ### gradle 빌드 속도 높이기
-- `${HOME}/.gradle/gradle.properties` 생성해서 아래 내용 추가
-  ~~~
-  org.gradle.daemon=true
-  ~~~
+- `${HOME}/.gradle/gradle.properties` 생성해서 `org.gradle.daemon=true` 입력
 
 ### EC2 생성
 - Amazon Linux 2018 선택
@@ -41,7 +38,7 @@
   - SSH 접속 쉽게하기
     - 키파일(.pem)을 `~./ssh/`로 복사 `$ cp harusketch.pem ~/.ssh/`
     - `~/.ssh/`에서 키 권한 변경 `$ chmod 600 ./harusketch.pem`
-    - `~/.ssh/` 디렉토리에 `config`파일 생성 `$ nano config``
+    - `~/.ssh/` 디렉토리에 `config`파일 생성 `$ nano config`
     - config 파일에 아래와 같이 설정
       ~~~config
       ### Haru Sketch
