@@ -35,7 +35,8 @@ deploy:
     on:
       repo: Integerous/Restful-WebApp
       branch: develop
-      
+
+# Travis CI & CodeDeploy 연동      
   - provider: codedeploy
     access_key_id: $AWS_ACCESS_KEY   ## Travis repo settings에 설정된 값
     secret_access_key: $AWS_SECRET_KEY   ## Travis repo settings에 설정된 값
