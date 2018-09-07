@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 // 특별히 @Repository를 추가할 필요도 없다.
 public interface PostsRepository extends JpaRepository<Posts, Long>{
 
+	//@Query를 쓰지 않아도 되지만, SpringDataJPA에서 제공하지 않는 메소드는 @Query로 작성 가능
 	@Query("SELECT p " +
 			"FROM Posts p " +
 			"ORDER BY p.id DESC")
