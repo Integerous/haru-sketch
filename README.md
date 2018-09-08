@@ -27,32 +27,64 @@
 
 ## 개발 과정
 
-### 테스트, 빌드, 배포 자동화 과정
-구어체로 써보는 테스트&빌드&배포 자동화 과정
-- 테스트와 빌드를 자동화하기 위해 Travis CI에서 프로젝트 저장소를 연동시키고,
-- 프로젝트에 `.Travis.yml` 파일을 생성해서 로컬에서 push할때 Travis CI가 테스트와 빌드하도록 설정한다.
-- 배포 자동화를 위해 AWS CodeDeploy와 연동해야하는데, CodeDeploy를 쓰려면 Travis CI가 사용할 수 있는 사용자계정이 필요하다.
-- AWS IAM에서 Travis CI가 AWS CodeDeploy용으로 사용할 사용자 계정을 생성한다.
-- 사용자 생성시 만들어진 access key와 secret key를 다운로드하여 보관한다.
-- 생성한 사용자 계정이 S3와 CodeDeploy에 접근할 수 있도록 FullAccess 정책들을 선택하여 연결한다.
-- 빌드된 배포파일(.jar)을 보관할 S3 버킷을 생성한다.
-- IAM에서 생성한 사용자에 EC2와 CodeDeploy를 위한 역할 2가지를 추가한다.
-- EC2 인스턴스에 IAM 역할을 연결하고, CodeDeploy Agent를 설치한다.
-- CodeDeploy Agent는 AWS CLI를 우선 설치하여 AWS를 커맨드로 다룰 수 있도록 한다.
-- AWS CodeDeploy CLI를 설치하고, 이 때 생성되는 ./install 파일을 이용해 CodeDeploy Agent를 설치하고 실행한다.
-- EC2 인스턴스가 부팅되면 자동으로 CodeDeploy Agent가 실행되도록 `/etc/init.d`에 쉘스크립트 파일을 생성한다.
-- CodeDeploy에는 저장 기능이 없으므로 Travis CI가 빌드한 결과물을 S3에 보관하고 CodeDeploy가 가져가도록 `.travis.yml` 파일에 설정한다.
-- Github에 AWS access key와 secret key가 노출하지 않기 위해 Travis CI에서 키-값 등록
+## 테스트, 빌드, 배포 자동화 과정
+>Github + EC2 + Travis CI + AWS S3 + AWS CodeDeploy
 
-~~~
-- EC2 생성
-- AWS RDS PostgreSQL 생성
-- EC2에 Git 설치 및 프로젝트 Clone
-- Travis CI 연동 (테스트&빌드 자동화)
-- AWS CodeDeploy 연동 (배포 자동화)
-- Travis CI와 AWS S3 연동
-- Travis CI & S3 & AWS CodeDeploy 연동
-~~~
+### 한 문장으로 표현하면?  
+- 프로젝트를 생성(수정)하여 Github에 push하면, Travis CI가 자동으로 테스트 및 빌드하여 S3에 배포 파일을 업로드하고, CodeDeploy가 배포 파일을 S3에서 받아와서 EC2에 올리면, EC2에 작성한 쉘스크립트에 의해 배포 파일이 실행되어 배포가 완료된다.
+
+### 각 도구의 역할
+- Travis CI
+  - 프로젝트 테스트 및 빌드 자동화
+  - 빌드 완료 시, S3에 빌드된 배포 파일 업로드
+  - S3에 업로드 완료 시, 배포 파일을 EC2에 올리도록 CodeDeploy 실행
+- AWS S3
+  - Travis CI가 빌드한 배포 파일의 저장소
+- AWS Code Deploy
+  - S3에서 가져온 배포 파일을 EC2에 올림(배포)
+  - EC2에 올라간 파일이 실행되도록 하는 쉘스크립트 파일을 우회하여 실행
+
+### 구현 과정
+1. [EC2 생성](https://github.com/Integerous/Restful-WebApp#ec2-%EC%83%9D%EC%84%B1)
+2. [AWS RDS PostgreSQL 생성](https://github.com/Integerous/Restful-WebApp#aws-rds-postgresql-%EC%83%9D%EC%84%B1)
+3. [EC2에 Git 설치 및 프로젝트 Clone](https://github.com/Integerous/Restful-WebApp#ec2%EC%97%90-git-%EC%84%A4%EC%B9%98-%EB%B0%8F-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-clone)
+4. [Travis CI 연동 (테스트&빌드 자동화)](https://github.com/Integerous/Restful-WebApp#travis-ci-%EC%97%B0%EB%8F%99-%ED%85%8C%EC%8A%A4%ED%8A%B8%EB%B9%8C%EB%93%9C-%EC%9E%90%EB%8F%99%ED%99%94)
+5. [AWS CodeDeploy 연동 (배포 자동화)](https://github.com/Integerous/Restful-WebApp#aws-code-deploy-%EC%97%B0%EB%8F%99-%EB%B0%B0%ED%8F%AC-%EC%9E%90%EB%8F%99%ED%99%94)
+6. [Travis CI와 AWS S3 연동](https://github.com/Integerous/Restful-WebApp#travis-ci%EC%99%80-aws-s3-%EC%97%B0%EB%8F%99)
+7. [Travis CI & S3 & AWS CodeDeploy 연동](https://github.com/Integerous/Restful-WebApp#travis-ci--s3--codedeploy-%EC%97%B0%EB%8F%99)
+
+
+### 구어체로 표현한 전체 과정
+>더 잘 이해하기 위해 구어체로 써보는 테스트&빌드&배포 자동화 과정
+1. 테스트와 빌드를 자동화하기 위해 Travis CI에서 프로젝트 저장소를 연동시키고,
+2. 프로젝트에 `.Travis.yml` 파일을 생성해서 로컬에서 push할때 Travis CI가 테스트와 빌드하도록 설정한다.
+3. 배포 자동화를 위해 AWS CodeDeploy와 연동해야 하는데, CodeDeploy를 쓰려면 Travis CI가 사용할 수 있는 사용자계정이 필요하다.
+4. AWS IAM에서 Travis CI가 AWS CodeDeploy용으로 사용할 사용자 계정을 생성한다.
+5. 사용자 생성시 만들어진 access key와 secret key를 다운로드하여 보관한다.
+6. 생성한 사용자 계정이 S3와 CodeDeploy에 접근할 수 있도록 FullAccess 정책들을 선택하여 연결한다.
+7. 빌드된 배포파일(.jar)을 보관할 S3 버킷을 생성한다.
+8. IAM에서 생성한 사용자에 EC2와 CodeDeploy을 위한 역할 2가지를 추가한다.(EC2RoleForCodeDeploy, CodeDeployRole)
+9. EC2 인스턴스에 IAM 역할(EC2RoleForCodeDeploy)을 연결하고, CodeDeploy Agent를 설치한다.
+10. CodeDeploy Agent보다 AWS CLI를 우선 설치하여 AWS를 커맨드로 다룰 수 있도록 한다.
+11. EC2가 CodeDeploy 이벤트를 수신할 수 있도록 CodeDeploy Agent를 설치해야한다.
+12. AWS CodeDeploy CLI를 설치하고, 이 때 생성되는 ./install 파일을 이용해 CodeDeploy Agent를 설치하고 실행한다.
+13. EC2 인스턴스가 부팅되면 자동으로 CodeDeploy Agent가 실행되도록 `/etc/init.d`에 쉘스크립트 파일을 생성한다.
+14. CodeDeploy에는 저장 기능이 없으므로 Travis CI가 빌드한 결과물을 S3에 보관하고 CodeDeploy가 가져가도록 `.travis.yml` 파일에 설정한다.
+15. Github에 AWS access key와 secret key가 노출하지 않기 위해 Travis CI에서 키-값 등록
+16. AWS CodeDeploy 콘솔에서 어플리케이션을 생성하는데, CodeDeploy가 EC2에 접근 가능하게 하는 CodeDeployRole을 ARN으로 선택한다.
+17. Travis CI에서 빌드가 끝나면 S3에 zip파일이 전송된다. 이 파일을 받아올 디렉토리를 생성한다.
+18. 프로젝트에 CodeDeploy 설정용 `appspec.yml` 파일을 생성하여 zip파일을 받아오기 위해 생성한 디렉토리를 입력한다.
+19. CodeDeploy는 `appspec.yml` 파일을 통해서 어떤 파일들을 어느 위치에 배포하고, 이후에 어떤 스크립트를 실행할 것인지 관리한다.
+19. Travis CI가 CodeDeploy도 실행시키도록 `.travis.yml` 파일에 설정 추가한다.
+20. 배포 파일(.jar)을 실행해야 실제로 배포되는 것이므로, 배포 파일을 실행시키는 `deploy.sh` 파일을 EC2에 생성한다.
+21. CodeDeploy가 EC2에 배포를 마치면 `deploy.sh` 파일을 실행하도록 `appspec.yml`에 설정한다.
+22. `deploy.sh` 파일은 프로젝트 내부에 있지 않기 때문에 CodeDeploy가 바로 실행할 수 없다. 그러므로 우회가 필요하다.
+23. `deploy.sh`가 실행되도록 하는 `execute-deploy.sh` 파일을 프로젝트 내부에 생성한다.
+
+
+
+
+
 ### gradle 빌드 속도 높이기
 - `${HOME}/.gradle/gradle.properties` 생성해서 `org.gradle.daemon=true` 입력
 
@@ -442,7 +474,7 @@
       AfterInstall:  ## 배포가 끝나면 아래 명령어를 실행
         - location: execute-deploy.sh  
           timeout: 180
-          ## CodeDeploy에서 바로 deploy.sh 를 실생시킬 수 없으므로,
+          ## CodeDeploy에서 바로 deploy.sh 를 실행시킬 수 없으므로,
           ## deploy.sh 를 실행하는 execute-deploy.sh 파일을 실행하여 우회한다.
     ~~~
   - CodeDeploy에서 바로 deploy.sh 를 실생시킬 수 없으므로, deploy.sh 를 실행하는 execute-deploy.sh 파일을 실행하여 우회한다.
