@@ -27,6 +27,9 @@
 
 ## 개발 과정
 
+### gradle 빌드 속도 높이기
+- `${HOME}/.gradle/gradle.properties` 생성해서 `org.gradle.daemon=true` 입력
+
 ## 테스트, 빌드, 배포 자동화 과정
 >Github + EC2 + Travis CI + AWS S3 + AWS CodeDeploy
 
@@ -85,8 +88,6 @@
 
 
 
-### gradle 빌드 속도 높이기
-- `${HOME}/.gradle/gradle.properties` 생성해서 `org.gradle.daemon=true` 입력
 
 ### EC2 생성
 - Amazon Linux 2018 선택
