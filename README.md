@@ -26,6 +26,33 @@
 
 
 ## 개발 과정
+
+### 테스트, 빌드, 배포 자동화 과정
+구어체로 써보는 테스트&빌드&배포 자동화 과정
+- 테스트와 빌드를 자동화하기 위해 Travis CI에서 프로젝트 저장소를 연동시키고,
+- 프로젝트에 `.Travis.yml` 파일을 생성해서 로컬에서 push할때 Travis CI가 테스트와 빌드하도록 설정한다.
+- 배포 자동화를 위해 AWS CodeDeploy와 연동해야하는데, CodeDeploy를 쓰려면 Travis CI가 사용할 수 있는 사용자계정이 필요하다.
+- AWS IAM에서 Travis CI가 AWS CodeDeploy용으로 사용할 사용자 계정을 생성한다.
+- 사용자 생성시 만들어진 access key와 secret key를 다운로드하여 보관한다.
+- 생성한 사용자 계정이 S3와 CodeDeploy에 접근할 수 있도록 FullAccess 정책들을 선택하여 연결한다.
+- 빌드된 배포파일(.jar)을 보관할 S3 버킷을 생성한다.
+- IAM에서 생성한 사용자에 EC2와 CodeDeploy를 위한 역할 2가지를 추가한다.
+- EC2 인스턴스에 IAM 역할을 연결하고, CodeDeploy Agent를 설치한다.
+- CodeDeploy Agent는 AWS CLI를 우선 설치하여 AWS를 커맨드로 다룰 수 있도록 한다.
+- AWS CodeDeploy CLI를 설치하고, 이 때 생성되는 ./install 파일을 이용해 CodeDeploy Agent를 설치하고 실행한다.
+- EC2 인스턴스가 부팅되면 자동으로 CodeDeploy Agent가 실행되도록 `/etc/init.d`에 쉘스크립트 파일을 생성한다.
+- CodeDeploy에는 저장 기능이 없으므로 Travis CI가 빌드한 결과물을 S3에 보관하고 CodeDeploy가 가져가도록 `.travis.yml` 파일에 설정한다.
+- Github에 AWS access key와 secret key가 노출하지 않기 위해 Travis CI에서 키-값 등록
+
+~~~
+- EC2 생성
+- AWS RDS PostgreSQL 생성
+- EC2에 Git 설치 및 프로젝트 Clone
+- Travis CI 연동 (테스트&빌드 자동화)
+- AWS CodeDeploy 연동 (배포 자동화)
+- Travis CI와 AWS S3 연동
+- Travis CI & S3 & AWS CodeDeploy 연동
+~~~
 ### gradle 빌드 속도 높이기
 - `${HOME}/.gradle/gradle.properties` 생성해서 `org.gradle.daemon=true` 입력
 
@@ -143,7 +170,8 @@
         - '$HOME/.m2/repository'
         - '$HOME/.gradle'
 
-    script: "./gradlew clean build" ## develop 브랜치에 Push 되었을때 수행하는 명령어. 프로젝트 내부에 둔 gradlew를 통해 clean & build 수행
+    script: "./gradlew clean build"
+    ## develop 브랜치에 Push 되었을때 수행하는 명령어. 프로젝트 내부에 둔 gradlew를 통해 clean & build 수행
 
     # CI 실행 완료시 메일로 알람 (slack도 가능)
     notifications:
@@ -214,7 +242,7 @@
         sudo service codedeploy-agent start
         ~~~
 ### Travis CI와 AWS S3 연동
-- CodeDeploy는 저장 기능이 없다. 따라서 Travis CI가 빌드한 결과물을 받아서 CodeDeploy가 가져갈 수 있또록 보관할 수 있는 공간이 필요한데, 보통 S3 쓴다.
+- CodeDeploy는 저장 기능이 없다. 따라서 Travis CI가 빌드한 결과물을 받아서 CodeDeploy가 가져갈 수 있도록 보관할 수 있는 공간이 필요한데, 보통 S3 쓴다.
 - 프로젝트 내부의 `.travis.yml 파일에 아래 코드 추가
   ~~~yml
   # Travis CI & S3 연동
@@ -287,7 +315,7 @@
         - ryanhan@cloudcash.kr
   ~~~
 
-### Travis CI & S3 & CodeDeploy 연동
+### Travis CI & S3 & AWS CodeDeploy 연동
 - AWS CodeDeploy 콘솔에서 어플리케이션 생성
   - 어플리케이션 이름 입력 (harusketch)
   - 배포 그룹 이름 입력 (harusketch-group)
@@ -412,8 +440,10 @@
 
     hooks:
       AfterInstall:  ## 배포가 끝나면 아래 명령어를 실행
-        - location: execute-deploy.sh  ## CodeDeploy에서 바로 deploy.sh 를 실생시킬 수 없으므로, deploy.sh 를 실행하는 execute-deploy.sh 파일을 실행하여 우회한다.
+        - location: execute-deploy.sh  
           timeout: 180
+          ## CodeDeploy에서 바로 deploy.sh 를 실생시킬 수 없으므로,
+          ## deploy.sh 를 실행하는 execute-deploy.sh 파일을 실행하여 우회한다.
     ~~~
   - CodeDeploy에서 바로 deploy.sh 를 실생시킬 수 없으므로, deploy.sh 를 실행하는 execute-deploy.sh 파일을 실행하여 우회한다.
 - CodeDeploy가 실행할 수 있도록 `execute-deploy.sh` 파일을 프로젝트 내부에 생성
