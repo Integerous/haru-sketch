@@ -48,7 +48,7 @@
             </form>
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#joinModal">회원가입</button>
+                    <a class="nav-link" href="../templates/join.hbs">회원가입</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">로그인</a>
@@ -57,82 +57,12 @@
         </div>
     </nav>
 
-    <!-- 회원가입 Modal 영역 -->
-    <div class="modal fade" id="joinModal" tabindex="-1" role="dialog" aria-labelledby="savePostsLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="savePostsLabel">회원가입</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form action="post">
-                        <div class="form-group">
-                            <label for="exampleInputEmail1">아이디(이메일)</label>
-                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Example@gmail.com">
-                            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleInputPassword1">비밀번호</label>
-                            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="영문,숫자,특수문자를 포함하여 8자리 이상">
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleInputPassword1">비밀번호 확인</label>
-                            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="비밀번호 재입력">
-                        </div>
-                        <div class="form-group form-check">
-                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                            <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" id="btn-save">회원가입</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-    <div class="col-md-12">
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#savePostsModal">글 등록</button>
-        <br/>
-        <br/>
-        <!-- 목록 출력 영역 -->
-        <table class="table table-horizontal table-bordered">
-            <thead class="thead-strong">
-                <tr>
-                    <th>게시글번호</th>
-                    <th>제목</th>
-                    <th>작성자</th>
-                    <th>작성일</th>
-                    <th>최종수정일</th>
-                </tr>
-            </thead>
-            <tbody id="tbody">
-             {{#each posts}} {{!-- posts라는 리스트를 순회하여 하나씩 꺼내 각각의 필드값을 채워서 테이블에 출력 --}}
-                <tr>
-                    <td>{{id}}</td>
-                    <td>{{title}}</td>
-                    <td>{{author}}</td>
-                    <td>{{createdDate}}</td>
-                    <td>{{modifiedDate}}</td>
-                </tr>
-            {{/each}}
-            </tbody>
-        </table>
-    </div>
-
     <!-- Modal 영역 -->
     <div class="modal fade" id="savePostsModal" tabindex="-1" role="dialog" aria-labelledby="savePostsLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="savePostsLabel">게시글 등록</h5>
+                    <h5 class="modal-title" id="savePostsLabel">회원 가입</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -140,22 +70,24 @@
                 <div class="modal-body">
                     <form>
                         <div class="form-group">
-                            <label for="title">제목</label>
-                            <input type="text" class="form-control" id="title" placeholder="제목을 입력하세요">
+                            <label for="exampleInputEmail1">Email address</label>
+                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
                         </div>
                         <div class="form-group">
-                            <label for="author"> 작성자 </label>
-                            <input type="text" class="form-control" id="author" placeholder="작성자를 입력하세요">
+                            <label for="exampleInputPassword1">Password</label>
+                            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
                         </div>
-                        <div class="form-group">
-                            <label for="content"> 내용 </label>
-                            <textarea class="form-control" id="content" placeholder="내용을 입력하세요"></textarea>
+                        <div class="form-group form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                            <label class="form-check-label" for="exampleCheck1">Check me out</label>
                         </div>
+                        <button type="submit" class="btn btn-primary">회원 가입</button>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-                    <button type="button" class="btn btn-primary" id="btn-save">등록</button>
+                    <button type="button" class="btn btn-primary" id="btn-save">회원 가입</button>
                 </div>
             </div>
         </div>
