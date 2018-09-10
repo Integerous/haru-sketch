@@ -8,6 +8,10 @@ spring:
   profiles: local
   datasource:
     data: classpath:data-h2.sql # 시작할때 실행시킬 script
+#        url: jdbc:postresql://haru-postgresql.cgtz5bon0h1u.ap-northeast-2.rds.amazonaws.com:5432/haruDB
+#        username: rhep0820
+#        password: 
+#        driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: true
     hibernate:

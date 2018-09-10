@@ -37,7 +37,7 @@ dependencies {
 	//handlebars 의존성 추가
 	compile 'pl.allegro.tech.boot:handlebars-spring-boot-starter:0.3.0'
 	// PostgreSQL
-	compile 'postgresql:postgresql:42.1.1'
+	//compile 'postgresql:postgresql:42.2.2'
 	runtime('com.h2database:h2')
 	runtime('org.postgresql:postgresql')
 	compileOnly('org.projectlombok:lombok:1.18.2')

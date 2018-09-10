@@ -33,10 +33,10 @@ deploy:
     local_dir: deploy  ## before_deploy에서 생성한 디렉토리
     wait-until-deployed: true
     on:
-      repo: Integerous/Restful-WebApp
+      repo: Integerous/haru-sketch
       branch: develop
 
-# Travis CI & CodeDeploy 연동      
+# Travis CI & CodeDeploy 연동
   - provider: codedeploy
     access_key_id: $AWS_ACCESS_KEY   ## Travis repo settings에 설정된 값
     secret_access_key: $AWS_SECRET_KEY   ## Travis repo settings에 설정된 값
@@ -48,7 +48,7 @@ deploy:
     region: ap-northeast-2
     wait-until-deployed: true
     on:
-      repo: Integerous/Restful-WebApp
+      repo: Integerous/haru-sketch
       branch: develop
       
 # CI 실행 완료시 메일로 알람
