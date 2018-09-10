@@ -36,7 +36,9 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile('org.springframework.boot:spring-boot-devtools')
 	//handlebars 의존성 추가
-	compile 'pl.allegro.tech.boot:handlebars-spring-boot-starter:0.3.0'
+	//compile 'pl.allegro.tech.boot:handlebars-spring-boot-starter:0.3.0'
+	//Mustache 의존성 추가 (핸들바 대신)
+	compile('org.springframework.boot:spring-boot-starter-mustache')
 	// PostgreSQL
 	//compile 'postgresql:postgresql:42.2.2'
 	runtime('com.h2database:h2')

@@ -19,6 +19,8 @@ spring:
   h2:
     console:
       enabled: true
+  mustache:
+    suffix: .html
       
 banner:
   location: banner.txt

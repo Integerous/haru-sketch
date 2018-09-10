@@ -23,11 +23,11 @@ public class Posts extends BaseTimeEntity{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)//PK의 생성 규칙을 나타냄.
 	private Long id;
 	
-	@Column(length = 500, nullable = false)
+	//@Column(length = 500, nullable = false)
 	//굳이 선언안해도 이 클래스의 필드는 모두 컬럼이 되지만 추가 설정을 위해서 사용
 	private String title;
 	
-	@Column(columnDefinition = "TEXT", nullable = false)
+	//@Column(columnDefinition = "TEXT", nullable = false)
 	private String content;
 	
 	private String author;
