@@ -27,6 +27,10 @@
 
 ## 개발 과정
 
+### 회원가입 기능 구현
+### 로그인 기능 구현
+
+
 ### gradle 빌드 속도 높이기
 - `${HOME}/.gradle/gradle.properties` 생성해서 `org.gradle.daemon=true` 입력
 
