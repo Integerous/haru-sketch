@@ -23,7 +23,7 @@ public class Member extends BaseTimeEntity{
 		@Id//해당 테이블의 PK 필드 나타냄
 		@GeneratedValue(strategy = GenerationType.IDENTITY)//PK의 생성 규칙을 나타냄.
 		private Long id;
-		@Column(nullable=false)
+		@Column(nullable=false, unique=true)
 		private String email;
 		private String pwd;
 		private String name;

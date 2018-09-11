@@ -18,7 +18,6 @@ spring:
 #        driver-class-name: org.postgresql.Driver
 
 
-
   jpa:
     show-sql: true
     hibernate:
@@ -29,6 +28,7 @@ spring:
       enabled: true
   mustache:
     suffix: .html
+    expose-session-attributes: true
       
 banner:
   location: banner.txt

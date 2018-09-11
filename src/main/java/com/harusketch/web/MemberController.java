@@ -1,5 +1,7 @@
 package com.harusketch.web;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,11 +28,25 @@ public class MemberController {
 	public String loginForm() {
 		return "member/login";
 	}
+	
 	@PostMapping("/login")
-	public String login(String email, String pwd) {
+	public String login(String email, String pwd, HttpSession session) {
 		
 		Member member = memberRepository.findByEmail(email);
 		
+		if(member == null) {
+			return "redirect:/members/loginForm";
+		}
+		if(!pwd.equals(member.getPwd())) {
+			return "redirect:/members/loginForm";
+		}
+		session.setAttribute("memberSession", member);
+		return "redirect:/";
+	}
+	
+	@GetMapping("/logout")
+	public String logout(HttpSession session) {
+		session.removeAttribute("memberSession");
 		return "redirect:/";
 	}
 	
@@ -58,8 +74,12 @@ public class MemberController {
 	
 	//회원 정보수정
 	@GetMapping("/{id}/info")
-	public String memberInfo(@PathVariable Long id, Model model) {
-		
+	public String memberInfo(@PathVariable Long id, Model model, HttpSession session) {
+	
+		Object memberSession = session.getAttribute("memberSession");
+		if(memberSession == null) {
+			return "redirect:/members/loginForm";
+		}
 		Member member = memberRepository.findById(id).get();
 		model.addAttribute("member", member);
 		
