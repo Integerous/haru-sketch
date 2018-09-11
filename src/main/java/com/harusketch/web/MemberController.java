@@ -26,6 +26,11 @@ public class MemberController {
 	public String loginForm() {
 		return "member/login";
 	}
+	@PostMapping("/login")
+	public String login(String email, String pwd) {
+		
+		return "redirect:/";
+	}
 	
 	//회원가입 폼
 	@GetMapping("/form")
