@@ -1,0 +1,37 @@
+{{> /include/htmlHeader}}
+
+
+{{> /include/nav}}
+
+
+<h3>회원가입</h3>
+<div class="container">
+
+	<form action="/member/join" method="post">
+	  <div class="form-group col-md-6">
+	    <label for="exampleInputEmail1">이메일(아이디)</label>
+	    <input name="email" type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="EXAMPLE@gmail.com">
+	    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+	  </div>
+	  <div class="form-group col-md-6">
+	    <label for="exampleInputPassword1">비밀번호</label>
+	    <input name="pwd" type="password" class="form-control" id="pwd" placeholder="영문, 숫자 포함 6~12자">
+	  </div>
+	  <div class="form-group col-md-6">
+	    <label for="exampleInputPassword1">이름</label>
+	    <input name="name" type="text" class="form-control" id="name" placeholder="ex) 홍길동">
+	  </div>
+	  <div class="form-group col-md-6">
+	    <label for="exampleInputPassword1">휴대폰 번호</label>
+	    <input name="phone" type="text" class="form-control" id="phone" placeholder="ex) 010-0000-0000">
+	  </div>
+	  <div class="form-group col-md-6">
+	    <label for="exampleInputPassword1">주소</label>
+	    <input name="address" type="text" class="form-control" id="address" placeholder="배송지 주소 입력">
+	  </div>
+	  <button type="submit" class="btn btn-primary">회원가입</button>
+	</form>
+</div>
+
+
+{{> /include/htmlFooter}}

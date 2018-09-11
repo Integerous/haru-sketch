@@ -1,5 +1,6 @@
 package com.harusketch.domain.member;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -7,9 +8,7 @@ import javax.persistence.Id;
 
 import com.harusketch.domain.BaseTimeEntity;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -23,6 +22,8 @@ public class Member extends BaseTimeEntity{
 		
 		@Id//해당 테이블의 PK 필드 나타냄
 		@GeneratedValue(strategy = GenerationType.IDENTITY)//PK의 생성 규칙을 나타냄.
+		private Long id;
+		@Column(nullable=false)
 		private String email;
 		private String pwd;
 		private String name;
