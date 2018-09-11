@@ -1,4 +1,4 @@
-package com.harusketch.service;
+/*package com.harusketch.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,7 +23,7 @@ public class PostServiceTest {
 	@Autowired
 	private PostsRepository postsRepository;
 	
-	/*@After
+	@After
 	public void cleanup() {
 		postsRepository.deleteAll();
 	}
@@ -43,5 +43,5 @@ public class PostServiceTest {
 		//then
 		Posts posts = postsRepository.findAll().get(0);
 		assertThat(posts.getAuthor()).isEqualTo(dto.getAuthor());
-	}*/
-}
+	}
+}*/
