@@ -19,12 +19,12 @@ public class WebControllerTest {
 	@Autowired
 	private TestRestTemplate restTemplate;
 	
-	@Test
+	/*@Test
 	public void 메인페이지_로딩() {
 		//when
 		String body = this.restTemplate.getForObject("/", String.class);
 		
 		//then
 		assertThat(body).contains("하루 스케치");
-	}
+	}*/
 }
