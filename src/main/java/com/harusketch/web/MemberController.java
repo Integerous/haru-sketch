@@ -29,6 +29,8 @@ public class MemberController {
 	@PostMapping("/login")
 	public String login(String email, String pwd) {
 		
+		Member member = memberRepository.findByEmail(email);
+		
 		return "redirect:/";
 	}
 	
