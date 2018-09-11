@@ -21,6 +21,12 @@ public class MemberController {
 	@Autowired
 	private MemberRepository memberRepository;
 	
+	
+	@GetMapping("/loginForm")
+	public String loginForm() {
+		return "member/login";
+	}
+	
 	//회원가입 폼
 	@GetMapping("/form")
 	public String form() {
