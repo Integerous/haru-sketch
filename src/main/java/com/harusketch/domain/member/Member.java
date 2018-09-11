@@ -31,6 +31,15 @@ public class Member extends BaseTimeEntity{
 		private String address;
 		
 		
+		public void update(Member modifiedMember) {
+			this.email = modifiedMember.email;
+			this.pwd = modifiedMember.pwd;
+			this.name = modifiedMember.name;
+			this.phone = modifiedMember.phone;
+			this.address = modifiedMember.address;
+		}
+		
+		
 
 		
 		

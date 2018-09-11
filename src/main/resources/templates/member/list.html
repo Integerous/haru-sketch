@@ -13,6 +13,7 @@
       <th scope="col">이름</th>
       <th scope="col">휴대폰 번호</th>
       <th scope="col">주소</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -24,6 +25,7 @@
       <td>{{name}}</td>
       <td>{{phone}}</td>
       <td>{{address}}</td>
+      <td><a href="/members/{{id}}/info" class="btn btn-success" role="button">회원정보 수정</a>
     </tr>
     {{/members}}
   </tbody>
