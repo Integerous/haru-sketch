@@ -23,6 +23,8 @@ spring:
     hibernate:
       ddl-auto: create-drop
     database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate.format_sql: true
   h2:
     console:
       enabled: true
@@ -32,3 +34,4 @@ spring:
       
 banner:
   location: banner.txt
+  
