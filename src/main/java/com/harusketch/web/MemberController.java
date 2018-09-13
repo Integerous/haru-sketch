@@ -71,7 +71,7 @@ public class MemberController {
 	 */
 	@GetMapping("/form")
 	public String form() {
-		return "/member/form";
+		return "member/form";
 	}
 	
 	/**
@@ -96,7 +96,7 @@ public class MemberController {
 	public String list(Model model) {
 		
 		model.addAttribute("members", memberRepository.findAll()); 
-		return "/member/list";
+		return "member/list";
 	}
 	
 	/**
@@ -122,7 +122,7 @@ public class MemberController {
 		Member member = memberRepository.findById(memberId).get();
 		model.addAttribute("member", member);
 		
-		return "/member/updateInfo";
+		return "member/updateInfo";
 	}
 	/**
 	 * 회원 정보 수정
