@@ -19,7 +19,7 @@ apply plugin: 'io.spring.dependency-management'
 
 
 group = 'com.harusketch'
-version = '0.0.16'
+version = '0.0.17'
 sourceCompatibility = 1.8
 
 repositories {
