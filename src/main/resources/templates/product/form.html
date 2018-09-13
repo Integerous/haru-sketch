@@ -1,65 +1,9 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-    <title>하루스케치</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <!-- 부트스트랩 css 추가 -->
-    <link rel="stylesheet" href="/css/lib/bootstrap.min.css">
-<!--css는 <head>에 js는 <body>의 최하단에 두는 이유는 페이지 로딩 속도를 높이기 위함 
-    css는 화면을 그리는 역할을 하기 때문에 head에서 불러오는 것이 좋다. -->
-</head>
-<body>
-<!-- ------------------------------------------------------------------------------------------------ -->
 
 
 
-<!-- Nav bar 영역 --> 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="/">Haru Sketch</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+{{> inc/htmlHeader}}
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="/boards/noticeList">공지 사항</a>
-      </li>
-    {{^memberSession}}
-      <li class="nav-item">
-        <a class="nav-link" href="/members/loginForm">로그인</a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="/members/form">회원가입 <span class="sr-only">(current)</span></a>
-      </li>
-    {{/memberSession}}
-    {{#memberSession}}
-      <li class="nav-item">
-        <a class="nav-link" href="/products/form">작품 등록</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/boards/noticeForm">공지사항 등록</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/members">회원목록</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/members/{{memberId}}/info">개인정보 수정</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/members/logout">로그아웃</a>
-      </li>
-    {{/memberSession}}
-    </ul>
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>
-  </div>
-</nav>
-<!-- /Nav bar 영역 -->
+{{> inc/nav}}
 
 
 
@@ -92,13 +36,4 @@
 </div>
 
 
- <!-- ------------------------------------------------------------------------------------------------ -->
-    <!--  부트스트랩 js, jquery 추가  -->
-    <script src="/js/lib/jquery.min.js"></script>
-    <script src="/js/lib/bootstrap.min.js"></script>
-    <!-- bootstrap은 jquery에 의존하기 때문에 bootstrap보다 jquery가 먼저 호출되도록 한다. -->
-
-    <!-- custom js 추가 -->
-    <!-- <script src="/js/app/main.js"></script> -->
-</body>
-</html>
+{{> inc/htmlFooter}}
