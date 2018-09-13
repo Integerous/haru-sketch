@@ -28,9 +28,9 @@ public class BoardController {
 	@GetMapping("/noticeForm")
 	public String noticeForm(HttpSession session) {
 		if(session == null) {
-			return "/members/loginForm";
+			return "members/loginForm";
 		}
-		return "/board/noticeForm";
+		return "board/noticeForm";
 	}
 	
 	/**
@@ -57,7 +57,7 @@ public class BoardController {
 		
 		model.addAttribute("notices", noticeRepository.findAll());
 		
-		return "/board/noticeList";
+		return "board/noticeList";
 	}
 	
 }

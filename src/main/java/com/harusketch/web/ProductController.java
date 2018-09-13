@@ -11,6 +11,6 @@ public class ProductController {
 	@GetMapping("/form")
 	public String form() {
 		
-		return "/product/form";
+		return "product/form";
 	}
 }
