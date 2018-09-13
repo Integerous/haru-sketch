@@ -6,11 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.harusketch.domain.board.Notice;
-import com.harusketch.domain.board.NoticeRepository;
 import com.harusketch.domain.board.Question;
 import com.harusketch.domain.board.QuestionRepository;
 import com.harusketch.domain.member.Member;
@@ -66,5 +65,23 @@ public class QuestionController {
 		
 		return "board/questionList";
 	}
+	
+	/**
+	 * 질문 상세내용
+	 * @param questionId
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/{questionId}")
+	public String questionDetail(@PathVariable Long questionId, Model model) {
+		
+		Question question = questionRepository.findById(questionId).get();
+		
+		model.addAttribute("question", question);
+		
+		return "board/questionDetail";
+	}
+	
+	
 	
 }
