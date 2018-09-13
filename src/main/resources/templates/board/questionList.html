@@ -16,14 +16,14 @@
     </tr>
   </thead>
   <tbody>
-    {{#notices}}
+    {{#questions}}
     <tr>
-      <th scope="row">{{noticeId}}</th>
+      <th scope="row">{{questionId}}</th>
       <td><string class="subject"><a href="#">{{title}}</a></string></td>
-      <td>{{writer}} (운영자)</td>
+      <td>{{writer.name}} ({{writer.email}})</td>
       <td>{{formattedCreatedDate}}</td>
     </tr>
-    {{/notices}}
+    {{/questions}}
   </tbody>
 </table>
 </div>

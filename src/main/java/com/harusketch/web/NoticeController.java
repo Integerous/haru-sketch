@@ -14,8 +14,8 @@ import com.harusketch.domain.board.NoticeRepository;
 import com.harusketch.domain.member.Member;
 
 @Controller
-@RequestMapping("/boards")
-public class BoardController {
+@RequestMapping("/notice")
+public class NoticeController {
 	
 	@Autowired
 	private NoticeRepository noticeRepository;
@@ -25,7 +25,7 @@ public class BoardController {
 	 * @param session
 	 * @return
 	 */
-	@GetMapping("/noticeForm")
+	@GetMapping("/form")
 	public String noticeForm(HttpSession session) {
 		if(session == null) {
 			return "members/loginForm";
@@ -40,7 +40,7 @@ public class BoardController {
 	 * @param session
 	 * @return
 	 */
-	@PostMapping("/noticeForm")
+	@PostMapping("/form")
 	public String noticeCreate(String title, String content, HttpSession session) {
 		
 		Member memberSession = (Member) session.getAttribute("memberSession");
@@ -49,10 +49,15 @@ public class BoardController {
 		
 		noticeRepository.save(newNotice);
 		
-		return "redirect:/boards/noticeList";
+		return "redirect:/notice/list";
 	}
 	
-	@GetMapping("/noticeList")
+	/**
+	 * 공지사항 리스트
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/list")
 	public String noticeList(Model model) {
 		
 		model.addAttribute("notices", noticeRepository.findAll());
