@@ -5,9 +5,11 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.harusketch.domain.board.Question;
@@ -22,7 +24,7 @@ public class QuestionController {
 	private QuestionRepository questionRepository;
 	
 	/**
-	 * 질문 작성 폼
+	 * 문의 작성 폼
 	 * @param session
 	 * @return
 	 */
@@ -54,7 +56,7 @@ public class QuestionController {
 	}
 	
 	/**
-	 * 질문 리스트
+	 * 문의 리스트
 	 * @param model
 	 * @return
 	 */
@@ -67,7 +69,7 @@ public class QuestionController {
 	}
 	
 	/**
-	 * 질문 상세내용
+	 * 문의 상세내용
 	 * @param questionId
 	 * @param model
 	 * @return
@@ -82,6 +84,70 @@ public class QuestionController {
 		return "board/questionDetail";
 	}
 	
+	/**
+	 * 문의 수정 폼
+	 * @param questionId
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/{questionId}/form")
+	public String questionEdit(@PathVariable Long questionId
+			, Model model, HttpSession session) {
+		
+		Member loginMember = (Member) session.getAttribute("memberSession");
+		Question question = questionRepository.findById(questionId).get();
+		
+		if(!question.isSameWriter(loginMember)) {
+			throw new IllegalStateException("You can update your own question only.");
+		}
+		model.addAttribute("question", question);
+		
+		return "board/questionEdit";
+	}
 	
+	/**
+	 * 문의 업데이트
+	 * @param questionId
+	 * @param title
+	 * @param content
+	 * @return
+	 */
+	@PutMapping("/{questionId}")
+	public String questionUpdate(@PathVariable Long questionId
+			, String title, String content, HttpSession session) {
+	
+		Member loginMember = (Member) session.getAttribute("memberSession");
+		Question question = questionRepository.findById(questionId).get();
+		
+		if(!question.isSameWriter(loginMember)) {
+			throw new IllegalStateException("You can update your own question only.");
+		}
+		
+		question.update(title, content);
+		
+		questionRepository.save(question);
+		
+		return String.format("redirect:/questions/%d", questionId);
+	}
+	
+	/**
+	 * 질문 삭제
+	 * @param questionId
+	 * @return
+	 */
+	@DeleteMapping("/{questionId}")
+	public String questionDelete(@PathVariable Long questionId
+			, HttpSession session) {
+		
+		Member loginMember = (Member) session.getAttribute("memberSession");
+		Question question = questionRepository.findById(questionId).get();
+		
+		if(!question.isSameWriter(loginMember)) {
+			throw new IllegalStateException("You can update your own question only.");
+		}
+		
+		questionRepository.deleteById(questionId);
+		return "redirect:/questions/list";
+	}
 	
 }

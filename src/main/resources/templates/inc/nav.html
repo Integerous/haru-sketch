@@ -7,12 +7,6 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="/notice/list">공지 사항</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/questions/list">질문 게시판</a>
-      </li>
     {{^memberSession}}
       <li class="nav-item">
         <a class="nav-link" href="/members/loginForm">로그인</a>
@@ -22,14 +16,54 @@
       </li>
     {{/memberSession}}
     {{#memberSession}}
+	  <li class="nav-item dropdown">
+	        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	         게시판
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/notice/list">공지사항</a>
+          <a class="dropdown-item" href="/questions/list">문의/답변</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">작품 목록(구현중)</a>
+        </div>
+      </li>
+      
+      <li class="nav-item dropdown">
+	        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	     회원 기능
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/questions/form">문의하기</a>
+          <a class="dropdown-item" href="/members/{{memberId}}/info">개인정보 수정</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="/members/logout">로그아웃</a>
+        </div>
+      </li>
+      
+      <li class="nav-item dropdown">
+	        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	     관리자 기능
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/notice/form">공지사항 등록</a>
+          <a class="dropdown-item" href="/questions/list">문의에 답변하기</a>
+          <a class="dropdown-item" href="/members">회원 목록</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="/members/logout">로그아웃</a>
+        </div>
+      </li>
+      
+      <!-- <li class="nav-item">
+        <a class="nav-link" href="/notice/list">공지 사항</a>
+      </li>
       <li class="nav-item">
-        <a class="nav-link" href="/products/form">작품 등록</a>
+        <a class="nav-link" href="/questions/list">QnA</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/questions/form">문의하기</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/notice/form">공지사항 등록</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/questions/form">질문 등록</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/members">회원목록</a>
@@ -39,7 +73,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/members/logout">로그아웃</a>
-      </li>
+      </li> -->
     {{/memberSession}}
     </ul>
   </div>

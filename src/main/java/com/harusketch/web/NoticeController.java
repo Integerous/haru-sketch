@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -65,4 +66,19 @@ public class NoticeController {
 		return "board/noticeList";
 	}
 	
+	@GetMapping("/{noticeId}")
+	public String noticeDetail(@PathVariable Long noticeId, Model model) {
+		
+		Notice notice = noticeRepository.findById(noticeId).get();
+		
+		model.addAttribute("notice", notice);
+		
+		return "board/noticeDetail";
+	}
+	
 }
+
+
+
+
+

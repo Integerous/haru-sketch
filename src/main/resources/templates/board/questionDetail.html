@@ -10,15 +10,37 @@
     	<header class="header">
     		<h3>{{title}}</h3>
     	</header>
-    	<div class="col-md-6">작성자 : {{writer.name}}</div>
-    	<div class="col-md-6">작성일 : {{formattedCreatedDate}}</div>
+    	<div class="col-md-6">작성자 {{writer.name}} ({{formattedCreatedDate}})</div>
 		<article class="article">
 		  <div class="form-group col-md-6">
 		    <article name="content" id="content" rows="5" class="form-control">{{content}}</article>
 		  </div>
-		  <button class="btn btn-success pull-right" type="button">답변하기</button>
+		</article>
+		  <a href="/questions/{{questionId}}/form" class="btn btn-success" role="button">수정하기</a>
+		  <form action="/questions/{{questionId}}" method="post">
+		    <input value="delete" name="_method" type="hidden">
+		  	<button type="submit" class="btn btn-fail">삭제</button>
+		  </form>
+		  <a href="/questions/list" class="btn btn-success" role="button">목록으로</a>
+	</div>
+	{{#answers}}
+	<div class="panel panel-default content-main">
+		<article class="article">
+	    	<div class="col-md-6">작성자 : {{writer.name}} ({{formattedCreatedDate}})</div>
+		  <div class="form-group col-md-6">
+		    <article name="content" id="content" rows="5" class="form-control">{{content}}</article>
+		  </div>
 		</article>
 	</div>
+	{{/answers}}
+	<form action="/questions/{{questionId}}/answers" method="post">
+		  <div class="form-group col-md-6">
+		    <label for="content">답변 내용</label>
+		    <textarea name="content" id="content" rows="5" class="form-control"></textarea>
+		  </div>
+		  <input type="submit" class="btn btn-success" value="답변 등록"/>
+		  <!-- <div class="clearfix"/> -->
+		</form>
 	{{/question}}
   </div>	
 </div>

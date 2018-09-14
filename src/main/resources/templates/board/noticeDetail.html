@@ -1,0 +1,29 @@
+
+{{> inc/htmlHeader}}
+
+{{> inc/nav}}
+
+<div class="container">
+  <div class="col-md-12 col-sm-12 col-lg-10 col-lg-offset-1">
+    {{#notice}}
+    <div class="panel panel-default content-main">
+    	<header class="header">
+    		<h3>{{title}}</h3>
+    	</header>
+    	<div class="col-md-6">작성자 : {{writer}}</div>
+    	<div class="col-md-6">작성일 : {{formattedCreatedDate}}</div>
+		<article class="article">
+		  <div class="form-group col-md-6">
+		    <article name="content" id="content" rows="5" class="form-control">{{content}}</article>
+		  </div>
+		  <a href="/notice/list" class="btn btn-success" role="button">목록으로</a>
+		</article>
+	</div>
+	{{/notice}}
+  </div>	
+</div>
+
+
+
+{{> inc/htmlFooter}}
+
