@@ -10,11 +10,11 @@
 - Eclipse
 - Github
 - Travis CI
+- AWS RDS (PostreSQL)
 - AWS EC2 (Linux)
 - AWS S3
 - AWS CodeDeploy
--
-
+- ...
 
 ## 1. 개발 계획
 |일정|주제|비고|
@@ -37,7 +37,11 @@
 - 빌드 도구는 ***Gradle*** 사용
 - 템플릿 엔진은 ***Mustache*** 사용
 - 테스트용 메모리DB ***H2*** 사용
-- 
+- 데이터베이스는 ***AWS RDS PostgreSQL*** 사용
+- 서버는 ***AWS EC2 Linux*** 사용
+- CI 도구는 ***Travis CI*** 사용
+- ...
+
 ### 2.2. DB 모델링
 - Lucid Chart 사용
 - 제3정규화
@@ -50,9 +54,9 @@
 - LocalDateTime 사용
 ### 2.6. 공지사항 게시판 구현
 ### 2.7. 작품 게시판 구현
+...
 
-
-### 2.0.(번외)
+### 2.99.(번외)
 - gradle 빌드 속도 높이기
   - `${HOME}/.gradle/gradle.properties` 생성해서 `org.gradle.daemon=true` 입력
 
@@ -479,7 +483,7 @@ notifications:
     echo "> Build 파일 복사"
     cp $REPOSITORY/build/build/libs/*.jar $REPOSITORY/jar/
 
-    JAR_NAME=$(ls $REPOSITORY/jar/ |grep 'harusketch' | tail -n 1)
+    JAR_NAME=$(ls -tr $REPOSITORY/jar/ |grep 'harusketch' | tail -n 1)
 
     echo "> 새로 배포된 JAR 이름은?? ===> $JAR_NAME"
 
