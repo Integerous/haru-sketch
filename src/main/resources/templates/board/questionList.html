@@ -26,7 +26,7 @@
     {{#answers}}
     <tr>
       <th scope="row">{{questionId}}</th>
-      <td><string class="subject"><a href="/questions/{{questionId}}">-----답변</a></string></td>
+      <td><string class="subject"><a href="/questions/{{questionId}}">-----답변: {{content}}</a></string></td>
       <td>{{writer.name}} ({{writer.email}})</td>
       <td>{{formattedCreatedDate}}</td>
     </tr>

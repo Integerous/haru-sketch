@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.harusketch.domain.board.Answer;
 import com.harusketch.domain.board.AnswerRepository;
@@ -14,7 +15,8 @@ import com.harusketch.domain.board.Question;
 import com.harusketch.domain.board.QuestionRepository;
 import com.harusketch.domain.member.Member;
 
-@Controller
+//@Controller //메소드가 자동으로 JSON으로 변환하게끔 하도록 @Controller > @RestController 바꿈
+@RestController
 @RequestMapping("/questions/{questionId}/answers")
 public class AnswerController {
 
@@ -24,8 +26,18 @@ public class AnswerController {
 	@Autowired
 	AnswerRepository answerRepository;
 	
+	/**
+	 * 문의에 답변하기
+	 * @param questionId
+	 * @param session
+	 * @param writer
+	 * @param title
+	 * @param content
+	 * @return
+	 */
 	@PostMapping("")
-	public String answer(@PathVariable Long questionId
+	//Ajax 사용을 위해 반환타입 String -> Answer 바꾸고 Answer타입인 save메소드를 반환
+	public Answer answer(@PathVariable Long questionId
 			, HttpSession session, String writer, String title, String content) {
 		
 		Member loginMember = (Member) session.getAttribute("memberSession");
@@ -34,8 +46,8 @@ public class AnswerController {
 		
 		Answer answer = new Answer(loginMember, question, title, content);
 		
-		answerRepository.save(answer);
+		//return String.format("redirect:/questions/%d", questionId);
+		return answerRepository.save(answer);
 		
-		return String.format("redirect:/questions/%d", questionId);
 	}
 }
