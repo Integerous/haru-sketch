@@ -17,8 +17,8 @@ import com.harusketch.domain.member.Member;
 
 //@Controller //메소드가 자동으로 JSON으로 변환하게끔 하도록 @Controller > @RestController 바꿈
 @RestController
-@RequestMapping("/questions/{questionId}/answers")
-public class AnswerController {
+@RequestMapping("api/questions/{questionId}/answers")
+public class ApiAnswerController {
 
 	@Autowired
 	QuestionRepository questionRepositoy;

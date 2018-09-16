@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.harusketch.domain.BaseTimeEntity;
 import com.harusketch.domain.member.Member;
 
@@ -43,7 +44,6 @@ public class Answer extends BaseTimeEntity{
 	@Lob
 	private String title;
 	private String content;
-	
 	private LocalDateTime createdDate;
 	
 	

@@ -28,4 +28,18 @@
 	
 	function onSuccess(data, status){
 	    console.log(data);
+//	    var answerTemplate = $("#answerTemplate").html();
+//	    var template = answerTemplate.format(data.writer.name, data.formattedCreatedDate, data.content);
+//	    $(".questionDetail").prepend(template);
 	}
+	
+	
+	String.prototype.format = function() {
+	  var args = arguments;
+	  return this.replace(/{(\d+)}/g, function(match, number) {
+	    return typeof args[number] != 'undefined'
+	        ? args[number]
+	        : match
+	        ;
+	  });
+	};
