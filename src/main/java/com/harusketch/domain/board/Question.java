@@ -42,7 +42,7 @@ public class Question extends BaseTimeEntity{
 	
 
 	@OneToMany(mappedBy="question") //mappedBy 값은 @ManyToOne으로 매핑할때의 Question 이름 
-	@OrderBy(" answerId DESC") // answer의 아이디를 기준으로 오름차순 정렬
+	@OrderBy(" answerId ASC") // answer의 아이디를 기준으로 오름차순 정렬
 	private List<Answer> answers;
 	
 	@Lob

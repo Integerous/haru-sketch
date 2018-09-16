@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 	$(".answer-create input[type=submit]").click(addAnswer);
 	
 	function addAnswer(e) {
@@ -23,14 +21,15 @@
 	}
 
 	function onError(){
-	
+		alert('errorrr!');
 	}
 	
 	function onSuccess(data, status){
 	    console.log(data);
-//	    var answerTemplate = $("#answerTemplate").html();
-//	    var template = answerTemplate.format(data.writer.name, data.formattedCreatedDate, data.content);
-//	    $(".questionDetail").prepend(template);
+	    var answerTemplate = $("#answerTemplate").html();
+	    var template = answerTemplate.format(data.writer.name, data.formattedCreatedDate, data.content);
+	    $(".questionDetail").prepend(template);
+	    location.reload();
 	}
 	
 	

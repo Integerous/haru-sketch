@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,7 +38,7 @@ public class ApiAnswerController {
 	 */
 	@PostMapping("")
 	//Ajax 사용을 위해 반환타입 String -> Answer 바꾸고 Answer타입인 save메소드를 반환
-	public Answer answer(@PathVariable Long questionId
+	public Answer answer(@PathVariable Long questionId 
 			, HttpSession session, String writer, String title, String content) {
 		
 		Member loginMember = (Member) session.getAttribute("memberSession");
