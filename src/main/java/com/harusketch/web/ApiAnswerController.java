@@ -48,7 +48,9 @@ public class ApiAnswerController {
 		Answer answer = new Answer(loginMember, question, title, content);
 		
 		//return String.format("redirect:/questions/%d", questionId);
-		return answerRepository.save(answer);
+		Answer result = answerRepository.save(answer);
+		return result;
+//		return answerRepository.save(answer);
 		
 	}
 }
