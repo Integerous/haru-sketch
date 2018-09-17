@@ -2,9 +2,10 @@
 
 ## 0. 개발 환경
 - RESTful API 기반 Web application
-- Spring Boot 1.5.10
+- Spring Boot 2.0.4
 - Gradle 
 - Mustache
+- lombok 1.18.2
 - PostgreSQL
 - H2
 - Eclipse
