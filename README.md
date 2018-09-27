@@ -525,4 +525,21 @@ notifications:
 ## 5. 무중단 배포 구축 (Nginx)
 ### 5.1. Nginx 설치
 - EC2에 접속해서 Nginx 설치 `$ sudo yum install nginx`
-- Nginx 실행 `$
+- Nginx 실행 `$ sudo service nginx start`
+- Nginx 실행 확인 1 `$ ps -ef | grep nginx`
+- Nginx 실행 확인 2 `EC2 인스턴스의 퍼블릭 DNS 주소로 브라우져 접속하여 Welcome to nginx 화면 확인`
+### 5.2. 리버스 프록시 설정
+- Nginx가 현재 실행중인 프로젝트를 연결하도록 설정
+- Nginx 설정 파일 편집
+  - `sudo nano /etc/nginx/nginx.conf`
+  - 파일 내용 중 `location / { 이 위치에 }`
+  - ~~~
+    proxy_pass http://localhost:8080; //요청이 오면 http://localhost:8080 으로 전달
+    # 아래 설정들은 실제 요청 데이터를 header의 각 항목에 할당
+    proxy_set_header X-Real-IP $remote_addr;  //Request Header의 X-Real-IP에 요청자의 IP를 저장
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    ~~~
+- Nginx 재시작 `$ sudo service nginx restart`
+- 위의 `Nginx 실행확인 2` 로 Nginx가 프로젝트를 프록시하는 것 확인
+### 5.3. 실행중인 프로젝트의 Profile 확인하는 API 작성
