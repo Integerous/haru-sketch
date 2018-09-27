@@ -521,3 +521,8 @@ notifications:
 - 문제점
   - 배포하는 동안 스프링부트 프로젝트는 종료상태가 되어 서비스를 이용할 수 없다는 점.
   - Nginx를 사용해서 무중단 배포해야 함
+
+## 5. 무중단 배포 구축 (Nginx)
+### 5.1. Nginx 설치
+- EC2에 접속해서 Nginx 설치 `$ sudo yum install nginx`
+- Nginx 실행 `$
