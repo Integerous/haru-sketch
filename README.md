@@ -630,3 +630,4 @@ public class Application  {
   - Spring Boot App 하위의 프로젝트명 - Application 을 복사
   - Name을 `harusketch - [set1] Application`으로 수정하고 Profile에 `set1` 입력
   - [set1] Application을 실행하고 localhost:8081/profile 로 접속했을때 set1 뜨면 정상
+- EC2에도 로컬과 같이 `/app/config/haru-sketch/real-application.yml` 생성하여 설정값 등록
