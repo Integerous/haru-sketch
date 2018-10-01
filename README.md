@@ -543,3 +543,90 @@ notifications:
 - Nginx 재시작 `$ sudo service nginx restart`
 - 위의 `Nginx 실행확인 2` 로 Nginx가 프로젝트를 프록시하는 것 확인
 ### 5.3. 실행중인 프로젝트의 Profile 확인하는 API 작성
+- 프로젝트의 환경설정 값을 다루는 `Environment`Bean을 DI받아 현재 활성화된 Profile을 반환하는 코드 작성
+~~~java
+@RestController
+@AllArgsConstructor
+public class WebRestController  {
+  
+  private PostsService postsService;
+  private Environment env;
+  ...
+  
+  @GetMapping("/profile")
+  public String getProfile()  {
+    return Arrays.stream(env.getActiveProfiles()).findFirst().orElse("");
+  }
+}
+~~~
+- `WebRestControllerTest` 생성하여 테스트
+~~~java
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+public class WebRestControllerTest  {
+  
+  @Autowired
+  private TestRestTemplate restTemplate;
+  
+  @Test
+  public void Profile확인() {
+    //when
+    String profile = this.restTemplate.getForObject("/profile", String.class);
+    
+    //then
+    asserThat(profile).isEqualTo("local");
+  }
+}
+~~~
+- 테스트 내용은 `/profile`로 요청하면 현재 활성화된 Profile값 (local)이 반환되는지 비교
+### 5.4. 운영 환경의 yml 파일 생성
+- 운영 환경의 yml 파일은 프로젝트 외부에 생성 (내부에 생성해서 git으로 올리면 운영환경의 중요 정보가 같이 올라감)
+  - `/app/config/haru-sketch/real-application.yml`에 생성
+  - ~~~yml
+    ---
+    spring:
+      profiles: set1
+    server:
+      port: 8081
+    
+    ---
+    spring:
+      profiles: set2
+    server:
+      port: 8082
+    ~~~
+- 운영 환경의 yml 파일을 프로젝트가 호출할 수 있도록 `Application.java`의 코드 변경
+- 원래 코드
+~~~java
+@EnableJpaAuditing // JPA Auditing 활성화
+@SpringBootApplication
+public class Application {
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+		System.out.println("====== SERVER STARTED ======");
+	}
+}
+~~~
+- 변경 후 코드
+~~~java
+@EnableJpaAuditing //JPA Auditing 활성화
+@SpringBootApplication
+public class Application  {
+
+  public static final String APPLICATION_LOCATIONS = 
+    "spring.config.location=classpath:application.yml,"
+    + "/app/config/haru-sketch/real-application.yml";
+
+  public static void main(String[] args)  {
+    new SpringApplicationBuilder(Application.class)
+              .properties(APPLICATION_LOCATIONS)
+              .run(args);
+  }
+}
+~~~
+- 스프링부트 프로젝트가 실행될 때, 프로젝트 내부에 있는 `application.yml`과 외부에 위치한 `/app/config/haru-sketch/real-application`을 모두 불러오는지 확인해보기
+  - Eclipse의 경우 `Application.java` 파일 우클릭 -> Debug As -> Debug Configuration 로 이동
+  - Spring Boot App 하위의 프로젝트명 - Application 을 복사
+  - Name을 `harusketch - [set1] Application`으로 수정하고 Profile에 `set1` 입력
+  - [set1] Application을 실행하고 localhost:8081/profile 로 접속했을때 set1 뜨면 정상
