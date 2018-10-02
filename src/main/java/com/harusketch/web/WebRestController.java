@@ -1,5 +1,8 @@
 package com.harusketch.web;
 
+import java.util.Arrays;
+
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +24,8 @@ public class WebRestController {
 	//private PostsRepository postsRepository;
 	private PostsService postsService; //save 메소드를 service의 save로 교체
 	
+	private Environment env; 
+	
 	@GetMapping("/hello")
 	public String hello() {
 		return "HelloWorld";
@@ -30,6 +35,15 @@ public class WebRestController {
 	public Long savePosts(@RequestBody PostsSaveRequestDto dto) {
 		//postsRepository.save(dto.toEntity());
 		return postsService.save(dto);//save 메소드를 service의 save로 교체
+	}
+	
+	//실행중인 프로젝트의 Profile을 확인할 수 있는 API
+	//프로젝트의 환경설정 값을 다루는 Environment Bean을 DI받아 현재 활성화된 Profile을 반환하는 코드
+	@GetMapping("/profile")
+	public String getProfile() {
+		return Arrays.stream(env.getActiveProfiles())
+				.findFirst()
+				.orElse("");
 	}
 	
 }
