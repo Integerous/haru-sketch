@@ -631,3 +631,17 @@ public class Application  {
   - Name을 `harusketch - [set1] Application`으로 수정하고 Profile에 `set1` 입력
   - [set1] Application을 실행하고 localhost:8081/profile 로 접속했을때 set1 뜨면 정상
 - EC2에도 로컬과 같이 `/app/config/haru-sketch/real-application.yml` 생성하여 설정값 등록
+  - 인스턴스의 `퍼블릭DNS/profile`로 접속하여 기본값인 `local` 출력되는지 확인
+
+### 5.5 배포 스크립트 작성
+### 5.5.1. 무중단 배포와 관련된 파일을 관리할 디렉토리와 스크립트 파일 생성
+- 지금까지 `git`, `travis` 디렉토리를 생성했고, 3번째로 `nonstop` 디렉토리 생성
+  - EC2 접속 후 `$ mkdir ~/app/nonstop` 
+### 5.5.2. 배포 스크립트 테스트
+- 기존의 스프링프로젝트.jar 복사
+- ```
+  $ mkdir ~/app/nonstop/haru-sketch
+  $ mkdir ~/app/nonstop/haru-sketch/build
+  $ mkdir ~/app/nonstop/haru-sketch/build/libs
+  $ cp ~/app/travis/build/build/libs/*.jar ~/app/nonstop/haru-sketch/build/lib
+  ```
