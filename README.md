@@ -633,11 +633,11 @@ public class Application  {
 - EC2에도 로컬과 같이 `/app/config/haru-sketch/real-application.yml` 생성하여 설정값 등록
   - 인스턴스의 `퍼블릭DNS/profile`로 접속하여 기본값인 `local` 출력되는지 확인
 
-### 5.5 배포 스크립트 작성
-### 5.5.1. 무중단 배포와 관련된 파일을 관리할 디렉토리와 스크립트 파일 생성
+### 5.5. 배포 스크립트 작성
+#### 5.5.1. 무중단 배포와 관련된 파일을 관리할 디렉토리와 스크립트 파일 생성
 - 지금까지 `git`, `travis` 디렉토리를 생성했고, 3번째로 `nonstop` 디렉토리 생성
   - EC2 접속 후 `$ mkdir ~/app/nonstop` 
-### 5.5.2. 배포 스크립트 테스트
+#### 5.5.2. 배포 스크립트 테스트
 - 기존의 스프링프로젝트.jar 복사
 - ```
   $ mkdir ~/app/nonstop/haru-sketch
@@ -645,3 +645,118 @@ public class Application  {
   $ mkdir ~/app/nonstop/haru-sketch/build/libs
   $ cp ~/app/travis/build/build/libs/*.jar ~/app/nonstop/haru-sketch/build/lib
   ```
+- jar 파일을 모아둘 디렉토리 생성 `$ mkdir ~/app/nonstop/jar`
+- 스크립트 파일 생성 `$ nano ~/app/nonstop/deploy.sh`
+~~~sh
+#! /bin/bash
+
+# 1. 스크립트에 필요한 변수값 할당
+BASE_PATH=/home/ec2-user/app/nonstop
+BUILD_PATH=$(ls $BASE_PATH/haru-sketch/build/libs/*.jar)
+JAR_NAME=$(basename $BUILD_PATH)
+echo ">> bulid 파일명: $JAR_NAME"
+
+# 2. 빌드된 Jar 파일을 jar 디렉토리로 복사
+echo ">> bulid 파일 복사"
+DEPLOY_PATH=$BASE_PATH/jar/
+cp $BUILD_PATH $DEPLOY_PATH
+
+# 3. 현재 구동중인 set 확인
+echo ">> 현재 구동중인 Set 확인"
+CURRENT_PROFILE=$(curl -s http://localhost/profile) # curl에서 -s 옵션은 상태진행바를 노출시키지 않는 옵션
+echo ">> $CURRENT_PROFILE"
+
+
+# 4. NginX에 연결되어 있지 않은 Profile 찾기
+# 쉬고있는 set 찾기 (set1이 사용중이면 set2가 쉬는 중이므로 IDLE에 할당, vice versa)
+if [ $CURRENT_PROFILE == set1 ]
+then
+  IDLE_PROFILE=set2
+  IDLE_PORT=8082
+elif [ $CURRENT_PROFILE == set2 ]
+then
+  IDLE_PROFILE=set1
+  IDLE_PORT=8081
+else
+  echo ">> 일치하는 Profile이 없습니다. Profile: $CURRENT_PROFILE"
+  echo ">> set1을 할당합니다. IDLE_PROFILE: set1"
+  IDLE_PROFILE=set1
+  IDLE_PORT=8081
+fi
+
+
+# 5. 미연결된 Jar로 신규 Jar 심볼릭 링크 (ln)
+echo ">> application.jar 교체"
+IDLE_APPLICATION=$IDLE_PROFILE-haru-sketch.jar
+IDLE_APPLICATION_PATH=$DEPLOY_PATH$IDLE_APPLICATION
+
+ln -Tfs $DEPLOY_PATH$JAR_NAME $IDLE_APPLICATION_PATH
+# -T : treat LINK_NAME as a normal file always
+# -f : remove existing destination files
+# -s : make symbolic links relative to link location
+
+
+# 6. Nginx와 연결되지 않은 Profile을 종료
+echo ">> $IDLE_PROFILE 에서 구동중인 어플리케이션 PID 확인"
+IDLE_PID=$(pgrep -f $IDLE_APPLICATION)
+
+if [ -z $IDLE_PID ]
+then
+  echo ">> 현재 구동중인 어플리케이션이 없으므로 종료하지 않습니다."
+else
+  echo ">> kill -15 $IDLE_PID"
+  kill -15 $IDLE_PID
+  sleep 5
+fi
+
+
+# 7.  6의 Profile로 Jar 실행
+echo ">> $IDLE_PROFILE 배포"
+nohup java -jar -Dspring.profiles.active=$IDLE_PROFILE $IDLE_APPLICATION_PATH &
+
+
+echo ">> $IDLE_PROFILE 10초 후 Health Check 시작!"
+echo ">> curl -s http://localhost:$IDLE_PORT/health "
+sleep 10
+
+
+# 8. 아래 코드를 10회 반복 수행
+for retry_count in {1..10}
+do
+  # 9. /health 요청 결과 저장
+  response=$(curl -s http://localhost:$IDLE_PORT/actuator/health)
+    ## /health의 결과는 {"status":"UP"}과 같이 나옴. spring-boot-starter-actuator 의존성 덕분.
+    ## actuator는 스프링부트 프로젝트의 여러 상태를 확인해줄 수 있는 의존성
+  up_count=$(echo $response | grep 'UP' | wc -l)
+    ## response 결과에 "UP"이 있는지 확인
+    ## echo $response | grep 'UP' 을 하면 UP이 포함된 문자열을 필터링 해줌
+    ## | wc -l 로 필터링된 문자열의 갯수가 몇개인지 확인.(UP이 있다면 1개 이상)
+
+  # 10. UP 문자열이 있는지 확인해서 있다면 for문 종료, 없다면 메세지 출력 후 아래 코드 실행
+  if [ $up_count -ge 1 ]
+  then # $up_count >= 1 ("UP" 문자열이 있는지 검증)
+      echo ">> Health Check 성공"
+      break
+  else
+      echo ">> Health Check의 응답을 알 수 없거나 혹은 status가 UP이 아닙니다."
+      echo ">> Health Check : ${response}"
+  fi
+
+
+  # 11. 10회 다 실행될 동안 안되면 스크립트 종료
+  if [ $retry_count -eq 10 ]
+  then
+      echo ">> Health Check 실패."
+      echo ">> Nginx에 연결하지 않고 배포를 종료합니다."
+      exit 1
+  fi
+
+
+  echo ">> Health Check 연결 실패. 재시도..."
+  sleep 10
+done
+~~~
+- 스크립트 실행 `$ ~/app/nonstop/deploy.sh`
+- set1을 profile로 가진 프로젝트 실행 확인 `$ ps ef|grep java`
+
+### 5.6. Nginx 동적 프록시 설정
