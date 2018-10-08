@@ -760,3 +760,47 @@ done
 - set1을 profile로 가진 프로젝트 실행 확인 `$ ps ef|grep java`
 
 ### 5.6. Nginx 동적 프록시 설정
+>배포가 완료되어 어플리케이션이 실행되면, Nginx가 기존에 바라보던 Profile의 반대편을 바라보도록 변경하는 과정 필요
+
+#### 5.6.1. Nginx 설정 변경
+`$ cd /etc/nginx` 이 경로에 Nginx 설정에 관련된 모든 정보가 담겨있다.  
+우선 Nginx가 동적으로 `Proxy Pass`를 변경할 수 있도록 설정 수정
+
+~~~
+$ sudo nano /etc/nginx/nginx.conf
+~~~
+
+아래와 같이 수정
+~~~vim
+#Load configuration files for the default server block
+include /etc/nginx/default.d/*.conf;
+
+include /etc/nginx/conf.d/service-url.inc; //새로 추가
+
+location / {
+	proxy_pass $srvice_url; // 수정
+	...
+~~~
+- `include /etc/nginx/conf.d/service-url.inc;`
+  - Java의 import와 같이 service-url.inc 파일을 포함
+  - nginx.conf에서 service-url.inc에 있는 변수들을 그대로 사용 가능
+- `proxy_pass $service_url;`
+  - service-url.inc에 있는 `service_url` 변수를 호출
+
+#### 5.6.2. srevice-url 파일 생성
+`$ sudo nano /etc/nginx/conf.d/service-url.inc`으로 파일 생성하고, 아래 내용 입력
+
+~~~
+set $service_url http://127.0.0.1:8001;
+~~~
+
+- 저장 후, 변경내용 반영을 위해 nginx 재시작. `$ sudo service nginx restart`  
+- `curl`로 테스트해보면 `$ curl -s localhost/profile`  
+- 아래처럼 Proxy가 set1로 가는 것 확인
+  ~~~
+  set1[ec2-user@ip-~~~]$
+  ~~~
+  
+#### 5.6.3. Nginx 스크립트 작성
+동적 프록시 환경이 구축된 Nginx가  
+배포 시점에 바라보는 Profile을 자동으로 변경하도록 스위치 스크립트 생성
